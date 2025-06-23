@@ -141,7 +141,7 @@ export default function Home() {
       {/* Pricing Section with Vertical Tabs */}
       <section id="pricing" className="flex flex-col md:flex-row relative min-[768px]:min-h-[400vh]" ref={pricingSectionRef}>
         {/* Left: Vertical Tabs (becomes horizontal on mobile) */}
-        <div className="w-full md:w-1/3 bg-black flex max-[768px]:flex-col flex-row items-center justify-center px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
+        <div className="w-full md:w-1/3 bg-black flex max-[768px]:flex-col items-center justify-center px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
           <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-8 text-white w-full text-center" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Choose Your Plan</h3>
           <div className="flex md:flex-col flex-row gap-2 md:gap-4 w-full max-w-xs md:max-w-xs justify-center md:justify-start">
             {pricing.map((plan, idx) => (
