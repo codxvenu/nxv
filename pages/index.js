@@ -118,37 +118,37 @@ export default function Home() {
 
       {/* Hero Section */}
       <div className="backdrop-blur-[12px]">
-      <section id="home" className="grid grid-cols-2  items-center justify-between gap-12 px-8 py-24 max-w-7xl mx-auto relative min-h-[100vh] " >
+      <section id="home" className="flex flex-col md:grid md:grid-cols-2 items-center justify-between gap-8 md:gap-12 px-4 md:px-8 py-12 md:py-24 max-w-7xl mx-auto relative min-h-[80vh] md:min-h-[100vh]">
         {/* Left: Text */}
-        <div className="flex-1 flex flex-col items-start justify-center max-w-xl">
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-4xl md:text-5xl font-extrabold my-[10px] tracking-tight text-white leading-[70px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+        <div className="flex-1 flex flex-col items-start justify-center max-w-xl w-full">
+          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-3xl sm:text-4xl md:text-5xl font-extrabold my-4 md:my-[10px] tracking-tight text-white leading-tight md:leading-[70px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
             Next-Gen Screen Mirroring
           </motion.h1>
-          <motion.h2 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="text-xl md:text-2xl font-medium my-[20px] text-white" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+          <motion.h2 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="text-base sm:text-lg md:text-2xl font-medium my-4 md:my-[20px] text-white" style={{ fontFamily: 'Roboto Mono, monospace' }}>
             Lightning-fast. Affordable. Built for gamers.
           </motion.h2>
-          <motion.a initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }} href="#download" className="inline-block px-8 py-3 rounded-full bg-white text-black text-lg font-bold tracking-wide hover:bg-neutral-200 transition-all duration-200 border border-white/10 mt-[20px]">
+          <motion.a initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }} href="#download" className="inline-block px-6 md:px-8 py-2.5 md:py-3 rounded-full bg-white text-black text-base md:text-lg font-bold tracking-wide hover:bg-neutral-200 transition-all duration-200 border border-white/10 mt-4 md:mt-[20px]">
             Download Now
           </motion.a>
         </div>
         {/* Right: Realistic Image Placeholder */}
-        <div className="flex-1 flex items-center justify-center">
-          <Image className="w-[500px] h-[500px] " src={"/mobile.png"} alt="Phone to PC" width={500} height={500} />
+        <div className="flex-1 flex items-center justify-center w-full max-[768px]:hidden">
+          <Image className="w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] md:w-[400px] md:h-[400px] lg:w-[500px] lg:h-[500px]" src={"/mobile.png"} alt="Phone to PC" width={500} height={500} />
         </div>
       </section>
       </div>
 
       {/* Pricing Section with Vertical Tabs */}
-      <section id="pricing" className="flex flex-row relative min-h-[400vh]" ref={pricingSectionRef}>
-        {/* Left: Vertical Tabs */}
-        <div className="md:w-1/3 w-full bg-black flex flex-col items-center justify-center px-6 py-8 md:py-0 sticky top-0 h-screen">
-          <h3 className="text-2xl font-bold mb-8 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Choose Your Plan</h3>
-          <div className="flex flex-col gap-4 w-full max-w-xs">
+      <section id="pricing" className="flex flex-col md:flex-row relative min-[768px]:min-h-[400vh]" ref={pricingSectionRef}>
+        {/* Left: Vertical Tabs (becomes horizontal on mobile) */}
+        <div className="w-full md:w-1/3 bg-black flex max-[768px]:flex-col flex-row items-center justify-center px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
+          <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-8 text-white w-full text-center" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Choose Your Plan</h3>
+          <div className="flex md:flex-col flex-row gap-2 md:gap-4 w-full max-w-xs md:max-w-xs justify-center md:justify-start">
             {pricing.map((plan, idx) => (
               <button
                 key={plan.name}
                 onClick={() => handleTabClick(idx)}
-                className={`px-6 py-3 rounded-full font-semibold transition-all duration-200 text-base focus:outline-none text-left ${activePlan === idx ? 'bg-blue-700 text-white shadow' : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'}`}
+                className={`px-5 max-[768px]:text-[13px]  md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all duration-200 text-sm md:text-base focus:outline-none text-left ${activePlan === idx ? 'bg-blue-700 text-white shadow' : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'}`}
                 style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
               >
                 {plan.name}
@@ -158,28 +158,26 @@ export default function Home() {
         </div>
         {/* Right: Pricing Cards Scrollable */}
         <div
-          className="md:w-2/3 w-full flex flex-col items-center justify-start px-4 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]"
-          style={{ height: '400vh' }}
+          className="w-full md:w-2/3 flex flex-col items-center justify-start px-2 md:px-4 bg-gradient-to-br from-[#f8fafc] to-[#e2e8f0]"
+          style={{ }}
           ref={scrollContainerRef}
         >
           {pricing.map((plan, i) => (
-            <div ref={el => cardRefs.current[i] = el} className="h-screen w-full flex justify-center items-center" key={plan.name} style={{ height: '100vh', marginBottom: i !== pricing.length - 1 ? '2rem' : 0 }}>
-            <div
-              
-              className="w-full max-w-xl flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-neutral-200 shadow-lg px-8 py-12 mb-12"
-              
-            >
-              <div className="text-3xl md:text-5xl font-bold mb-4 text-blue-700" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.name}</div>
-              <div className="text-5xl md:text-7xl font-extrabold mb-8 text-neutral-900" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.price}</div>
-              <ul className="mb-10 text-neutral-700 text-lg md:text-xl space-y-3" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                {plan.features.map((f) => (
-                  <li key={f}>• {f}</li>
-                ))}
-              </ul>
-              <a href="#download" className="px-10 py-4 rounded-full bg-blue-700 text-white font-semibold text-lg md:text-xl hover:bg-blue-800 transition-all duration-200 border border-blue-700/10" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                {plan.cta}
-              </a>
-            </div>
+            <div ref={el => cardRefs.current[i] = el} className="md:h-[100vh] md:h-screen w-full flex justify-center items-center " key={plan.name} style={{ marginBottom: i !== pricing.length - 1 ? '1rem' : 0 }}>
+              <div
+                className="w-full max-w-md md:max-w-xl flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-neutral-200 shadow-lg px-4 md:px-8 py-8 md:py-12 mb-8 md:mb-12 max-[768px]:h-[calc(100vh-194.73px)]"
+              >
+                <div className="text-2xl md:text-5xl font-bold mb-4 text-blue-700" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.name}</div>
+                <div className="text-4xl md:text-7xl font-extrabold mb-8 text-neutral-900" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.price}</div>
+                <ul className="mb-8 md:mb-10 text-neutral-700 text-base md:text-xl space-y-3" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  {plan.features.map((f) => (
+                    <li key={f}>• {f}</li>
+                  ))}
+                </ul>
+                <a href="#download" className="px-8 md:px-10 py-3 md:py-4 rounded-full bg-blue-700 text-white font-semibold text-base md:text-lg hover:bg-blue-800 transition-all duration-200 border border-blue-700/10" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  {plan.cta}
+                </a>
+              </div>
             </div>
           ))}
         </div>
@@ -188,7 +186,7 @@ export default function Home() {
       {/* FAQ Section */}
       <div className="backdrop-blur-[12px] py-20">
 
-      <section id="faq" className="px-4 max-w-5xl mx-auto h-[70vh]">
+      <section id="faq" className="px-4 max-w-5xl mx-auto min-[768px]:h-[70vh]">
         <h3 className="text-[xx-large] font-bold mb-14 text-center text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Frequently Asked Questions</h3>
         <div className="grid md:grid-cols-2 gap-8">
           {faqs.map((faq, i) => (
