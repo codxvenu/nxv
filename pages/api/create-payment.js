@@ -1,5 +1,5 @@
 import Razorpay from 'razorpay';
-import { verifyToken, findUserById, createPayment } from '../../lib/db';
+import { verifyToken, findUserById, createPayment, updateUserPlan } from '../../lib/db';
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -58,17 +58,19 @@ export default async function handler(req, res) {
       endDate.setHours(endDate.getHours() + 1); // 1 hour trial
 
       await updateUserPlan(user.id, plan, startDate, endDate);
+      const updatedUser = await findUserById(user.id);
 
       return res.status(200).json({
         success: true,
         message: 'Free trial activated successfully!',
         plan: plan,
         user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          currentPlan: plan,
-          planEndDate: endDate
+          id: updatedUser.id,
+          name: updatedUser.name,
+          email: updatedUser.email,
+          currentPlan: updatedUser.current_plan,
+          planStartDate: updatedUser.plan_start_date,
+          planEndDate: updatedUser.plan_end_date
         }
       });
     }
