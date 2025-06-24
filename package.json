@@ -11,8 +11,13 @@
   "dependencies": {
     "@fontsource/orbitron": "^5.2.6",
     "@fontsource/roboto-mono": "^5.2.6",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "framer-motion": "^12.19.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.1",
     "next": "15.3.4",
+    "razorpay": "^2.9.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

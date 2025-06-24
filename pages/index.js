@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
+import Script from "next/script";
+import Link from "next/link";
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -131,10 +133,46 @@ export default function Home() {
   const [activePlan, setActivePlan] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [isVideoHovered, setIsVideoHovered] = useState(false);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(null);
+  const [user, setUser] = useState(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
+  const [showProfile, setShowProfile] = useState(false);
   const cardRefs = useRef([]);
   const scrollContainerRef = useRef(null);
   const pricingSectionRef = useRef(null);
   const videoRef = useRef(null);
+
+  // Check user authentication on mount
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  const checkAuth = async () => {
+    try {
+      const response = await fetch('/api/auth/me');
+      const data = await response.json();
+      
+      if (data.success) {
+        setUser(data.user);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+    } finally {
+      setIsUserLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setUser(null);
+      setShowProfile(false);
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   // Scroll to card on tab click
   const handleTabClick = (idx) => {
@@ -159,6 +197,110 @@ export default function Home() {
 
   const handleVideoEnded = () => {
     setIsVideoPlaying(false);
+  };
+
+  // Payment handlers
+  const handlePayment = async (plan) => {
+    if (!user) {
+      setPaymentError('Please sign in to purchase a plan');
+      return;
+    }
+
+    setIsPaymentLoading(true);
+    setPaymentError(null);
+    setPaymentSuccess(null);
+
+    try {
+      // Get plan amount
+      const planAmounts = {
+        'Free Trial': 0,
+        'Basic': 299,
+        'Pro': 499,
+        'Premium': 999
+      };
+
+      const amount = planAmounts[plan];
+
+      if (plan === 'Free Trial') {
+        // Handle free trial
+        setPaymentSuccess('Free trial activated successfully!');
+        await checkAuth(); // Refresh user data
+        setIsPaymentLoading(false);
+        return;
+      }
+
+      // Create payment order
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          plan: plan,
+          amount: amount,
+          currency: 'INR'
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to create payment order');
+      }
+
+      // Initialize Razorpay payment
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: data.amount,
+        currency: data.currency,
+        name: 'NxV Reflect',
+        description: `${plan} Plan`,
+        order_id: data.order_id,
+        handler: async function (response) {
+          try {
+            // Verify payment
+            const verifyResponse = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                plan: plan
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.success) {
+              setPaymentSuccess(`Payment successful! ${plan} plan activated.`);
+              await checkAuth(); // Refresh user data
+            } else {
+              throw new Error(verifyData.message || 'Payment verification failed');
+            }
+          } catch (error) {
+            setPaymentError(error.message);
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+        },
+        theme: {
+          color: '#3B82F6',
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+
+    } catch (error) {
+      setPaymentError(error.message);
+    } finally {
+      setIsPaymentLoading(false);
+    }
   };
 
   // Update active tab on window scroll, only when pricing section is in view
@@ -193,12 +335,48 @@ export default function Home() {
 
   return (
     <>
+    <Script
+      src="https://checkout.razorpay.com/v1/checkout.js"
+      strategy="beforeInteractive"
+    />
     <div className="bg-cover bg-center fixed top-0 left-0 w-screen h-screen z-[-1]" style={{backgroundImage: `url('/bg.avif')`}}></div>
     <div className=" min-h-screen text-white font-mono">
       <Head>
         <title>NxV Reflect – Next-Gen Screen Mirroring</title>
         <meta name="description" content="Ultra low latency screen mirroring app. Experience lightning-fast mirroring at an affordable price." />
       </Head>
+
+      {/* Payment Status Notifications */}
+      {paymentSuccess && (
+        <div className="fixed top-20 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in">
+          <div className="flex items-center gap-2">
+            <span>✅</span>
+            <span>{paymentSuccess}</span>
+            <button 
+              onClick={() => setPaymentSuccess(null)}
+              className="ml-4 text-white/80 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
+      {paymentError && (
+        <div className="fixed top-20 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in">
+          <div className="flex items-center gap-2">
+            <span>❌</span>
+            <span>{paymentError}</span>
+            <button 
+              onClick={() => setPaymentError(null)}
+              className="ml-4 text-white/80 hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="w-full flex items-center justify-between px-8 py-5 border-b border-neutral-800 bg-black/80 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center gap-2">
@@ -210,9 +388,106 @@ export default function Home() {
               {link.name}
             </a>
           ))}
-          <a href="#download" className="ml-6 px-5 py-2 rounded-full bg-white text-black font-semibold hover:bg-neutral-200 transition-all duration-200 border border-white/10">
-            Download
-          </a>
+         
+        </div>
+        
+        {/* User Authentication */}
+        <div className="flex items-center gap-4">
+          {!isUserLoading && (
+            <>
+              {user ? (
+                <div className="relative">
+                  <button
+                    onClick={() => setShowProfile(!showProfile)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                  >
+                    <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-white font-medium uppercase" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                      {user.name}
+                    </span>
+                    <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                  
+                  
+                  {/* Profile Dropdown */}
+                  {showProfile && (
+                    <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg">
+                      <div className="space-y-4">
+                        <div className="border-b border-white/20 pb-3">
+                          <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                            {user.name}
+                          </h3>
+                          <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                            {user.email}
+                          </p>
+                          
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Current Plan:</span>
+                            <span className="text-blue-400 font-semibold" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                              {user.currentPlan}
+                            </span>
+                          </div>
+                          {user.planEndDate && (
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Expires:</span>
+                              <span className="text-white/60 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                                {new Date(user.planEndDate).toLocaleDateString()}
+                              </span>
+                            </div>
+                          )}
+                          
+                        </div>
+                        
+                        <div className="border-t border-white/20 pt-3">
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Pc Key:</span>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(user.apiKey);
+                                  alert('Pc Key copied to clipboard!');
+                                }}
+                                className="text-blue-400 hover:text-blue-300 text-sm"
+                              >
+                                Copy
+                              </button>
+                            </div>
+                            <div className="bg-black/30 p-2 rounded text-xs text-white/60 font-mono break-all">
+                              {user.apiKey}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <button
+                          onClick={handleLogout}
+                          className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                          style={{ fontFamily: 'Roboto Mono, monospace' }}
+                        >
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex gap-3">
+                  <Link href="/login" className="px-4 py-2 text-white hover:text-blue-400 transition-colors">
+                    Sign In
+                  </Link>
+                  <Link href="/signup" className="px-4 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200">
+                    Sign Up
+                  </Link>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </nav>
 
@@ -422,9 +697,18 @@ export default function Home() {
                     <li key={f}>• {f}</li>
                   ))}
                 </ul>
-                <a href="#download" className="px-8 md:px-10 py-3 md:py-4 rounded-full bg-blue-700 text-white font-semibold text-base md:text-lg hover:bg-blue-800 transition-all duration-200 border border-blue-700/10" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                  {plan.cta}
-                </a>
+                <button 
+                  onClick={() => handlePayment(plan.name)}
+                  disabled={isPaymentLoading}
+                  className={`px-8 md:px-10 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg transition-all duration-200 border ${
+                    isPaymentLoading 
+                      ? 'bg-gray-400 text-white cursor-not-allowed' 
+                      : 'bg-blue-700 text-white hover:bg-blue-800 border-blue-700/10'
+                  }`} 
+                  style={{ fontFamily: 'Roboto Mono, monospace' }}
+                >
+                  {isPaymentLoading ? 'Processing...' : plan.cta}
+                </button>
               </div>
             </div>
           ))}
