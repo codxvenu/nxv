@@ -99,11 +99,57 @@ const testimonials = [
 ];
 
 const pricing = [
-  { name: "Free Trial", price: "$0", features: ["Basic mirroring", "Standard latency", "Limited support"], cta: "Start Free" },
-  { name: "Basic", price: "$2.99/mo", features: ["HD mirroring", "Low latency", "Email support"], cta: "Choose Basic" },
-  { name: "Pro", price: "$4.99/mo", features: ["Ultra-low latency", "Priority support", "All devices"], cta: "Go Pro" },
-  { name: "Premium", price: "$9.99/mo", features: ["All Pro features", "Gaming mode", "Early access"], cta: "Get Premium" },
+  {
+    name: "Free Trial",
+    price: "$0",
+    features: [
+      "720p quality",
+      "10Mbps bitrate",
+      "30/60 FPS",
+      "Lowest latency",
+      "Limited support"
+    ],
+    cta: "Start Free"
+  },
+  {
+    name: "Basic",
+    price: "$2.99/mo",
+    features: [
+      "Up to 1080p HD",
+      "10–40Mbps bitrate",
+      "30–90 FPS",
+      "Low latency",
+      "Email support"
+    ],
+    cta: "Choose Basic"
+  },
+  {
+    name: "Pro",
+    price: "$4.99/mo",
+    features: [
+      "Up to 1440p",
+      "10–80Mbps bitrate",
+      "30–120 FPS",
+      "Ultra-low latency",
+      "Priority support"
+    ],
+    cta: "Go Pro"
+  },
+  {
+    name: "Premium",
+    price: "$9.99/mo",
+    features: [
+      "Up to 4K (2160p)",
+      "Max bitrate",
+      "30–240 FPS ⚡",
+      "Gaming mode 🎮",
+      "All Pro features",
+      "Early access"
+    ],
+    cta: "Get Premium"
+  }
 ];
+
 
 const faqs = [
   {
