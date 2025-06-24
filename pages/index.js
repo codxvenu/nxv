@@ -6,7 +6,9 @@ import { useState, useRef, useEffect } from "react";
 const navLinks = [
   { name: "Home", href: "#home" },
   { name: "Features", href: "#features" },
+  { name: "How It Works", href: "#how-it-works" },
   { name: "Pricing", href: "#pricing" },
+  { name: "Testimonials", href: "#testimonials" },
   { name: "Q&A", href: "#faq" },
 ];
 
@@ -14,6 +16,84 @@ const userTypes = [
   { icon: "🧑‍💻", title: "Casual" },
   { icon: "🎮", title: "Pro Gamer" },
   { icon: "🚀", title: "Power User" },
+];
+
+const premiumFeatures = [
+  {
+    icon: "⚡",
+    title: "Ultra-Low Latency",
+    description: "Experience near real-time mirroring with our optimized streaming technology that reduces lag to under 50ms."
+  },
+  {
+    icon: "🖥️",
+    title: "4K Resolution",
+    description: "Mirror your phone screen in stunning 4K resolution with HDR support for the most vibrant colors."
+  },
+  {
+    icon: "🎯",
+    title: "120FPS Smoothness",
+    description: "Buttery smooth mirroring at 120 frames per second makes gaming and scrolling feel native."
+  },
+  {
+    icon: "📶",
+    title: "Wireless & Wired",
+    description: "Connect via WiFi for convenience or USB for maximum performance and stability."
+  },
+  {
+    icon: "🔒",
+    title: "End-to-End Encryption",
+    description: "Your data stays private with military-grade encryption during transmission."
+  },
+  {
+    icon: "🎮",
+    title: "Game Mode",
+    description: "Special optimizations for mobile gaming with controller support and performance tuning."
+  }
+];
+
+const howItWorksSteps = [
+  {
+    number: "1",
+    title: "Install NxV Reflect on your PC",
+    description: "Download and install our lightweight desktop application"
+  },
+  {
+    number: "2", 
+    title: "Connect your phone via USB or WiFi",
+    description: "Choose your preferred connection method for optimal performance"
+  },
+  {
+    number: "3",
+    title: "Launch & enjoy ultra-smooth 4K mirroring",
+    description: "Start mirroring instantly with zero configuration required"
+  }
+];
+
+const testimonials = [
+  {
+    rating: 5,
+    feedback: "Game changer! The 120FPS mode makes mobile gaming on PC feel native. No more lag or stuttering.",
+    name: "Rahul",
+    device: "Poco X4 Pro"
+  },
+  {
+    rating: 5,
+    feedback: "Perfect for streaming my phone screen during presentations. The 4K quality is incredible.",
+    name: "Sarah",
+    device: "iPhone 15 Pro"
+  },
+  {
+    rating: 5,
+    feedback: "Finally found a mirroring app that actually works without lag. Worth every penny!",
+    name: "Alex",
+    device: "Samsung Galaxy S23"
+  },
+  {
+    rating: 5,
+    feedback: "The encryption gives me peace of mind. Best mirroring solution I've ever used.",
+    name: "Mike",
+    device: "OnePlus 11"
+  }
 ];
 
 const pricing = [
@@ -138,19 +218,123 @@ export default function Home() {
       </section>
       </div>
 
+      {/* Premium Features Section */}
+      <div className="backdrop-blur-[12px] py-20">
+        <section id="features" className="px-4 max-w-7xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
+            style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
+          >
+            Premium Features
+          </motion.h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {premiumFeatures.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 group"
+              >
+                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                  {feature.title}
+                </h3>
+                <p className="text-white/80 text-base leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      {/* How It Works Section */}
+      <div className="backdrop-blur-[12px] py-20">
+        <section id="how-it-works" className="px-4 max-w-7xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
+            style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
+          >
+            How NxV Reflect Works
+          </motion.h2>
+          
+          {/* Steps */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {howItWorksSteps.map((step, i) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2, duration: 0.6 }}
+                className="text-center"
+              >
+                <div className="w-20 h-20 mx-auto mb-6 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                  {step.number}
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                  {step.title}
+                </h3>
+                <p className="text-white/80 text-base" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Video Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="w-full"
+          >
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center">
+              <h3 className="text-2xl font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                Watch How It Works
+              </h3>
+              <div className="h-[350px] bg-black/50 rounded-xl flex items-center justify-center">
+                <div className="text-white/60 text-lg">
+                  <svg className="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                  <p>Video Demo Coming Soon</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      </div>
+
+     
+
+
       {/* Pricing Section with Vertical Tabs */}
       <section id="pricing" className="flex flex-col md:flex-row relative min-[768px]:min-h-[400vh]" ref={pricingSectionRef}>
         {/* Left: Vertical Tabs (becomes horizontal on mobile) */}
-        <div className="w-full md:w-1/3 bg-black flex max-[768px]:flex-col items-center justify-center px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
+        <div className="w-full md:w-1/3 bg-black flex flex-col items-center justify-center px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
           <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-8 text-white w-full text-center" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Choose Your Plan</h3>
           <div className="flex md:flex-col flex-row gap-2 md:gap-4 w-full max-w-xs md:max-w-xs justify-center md:justify-start">
             {pricing.map((plan, idx) => (
               <button
-                key={plan.name}
+              key={plan.name}
                 onClick={() => handleTabClick(idx)}
                 className={`px-5 max-[768px]:text-[13px]  md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all duration-200 text-sm md:text-base focus:outline-none text-left ${activePlan === idx ? 'bg-blue-700 text-white shadow' : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'}`}
                 style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
-              >
+                >
                 {plan.name}
               </button>
             ))}
@@ -181,7 +365,46 @@ export default function Home() {
             </div>
           ))}
         </div>
+          {/* Testimonials Section */}
       </section>
+      <div className="backdrop-blur-[12px] py-20">
+        <section id="testimonials" className="px-4 max-w-7xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0, y: 30 }} 
+            whileInView={{ opacity: 1, y: 0 }} 
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
+            style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
+          >
+            What Users Say
+          </motion.h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {testimonials.map((testimonial, i) => (
+              <motion.div
+                key={testimonial.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300"
+              >
+                <div className="flex mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
+                  ))}
+                </div>
+                <p className="text-white/90 text-sm mb-4 leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  "{testimonial.feedback}"
+                </p>
+                <div className="text-white/70 text-xs" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  {testimonial.name} • {testimonial.device}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* FAQ Section */}
       <div className="backdrop-blur-[12px] py-20">
@@ -218,6 +441,33 @@ export default function Home() {
       </section>
 
                 </div>
+                 {/* Conversion Banner */}
+      <div className="backdrop-blur-[12px] py-16">
+        <section className="px-4 max-w-4xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 md:p-12"
+          >
+            <h2 className="text-2xl md:text-4xl font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              Ready to Experience 4K 120FPS Mirroring?
+            </h2>
+            <p className="text-white/80 text-lg mb-8" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+              Join thousands of users who have transformed how they use their phones with NxV Reflect Pro.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a href="#download" className="px-8 py-3 rounded-full bg-white text-black font-bold hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                Download Now
+              </a>
+              <a href="#pricing" className="px-8 py-3 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-200 border border-blue-600" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                View Pricing
+              </a>
+            </div>
+          </motion.div>
+        </section>
+      </div>
       {/* Footer */}
       <footer className="w-full flex flex-col md:flex-row items-center justify-between px-8 py-8 bg-black border-t border-neutral-800  gap-4 text-sm">
         <div className="flex items-center gap-2">
