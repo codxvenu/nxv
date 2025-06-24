@@ -129,9 +129,12 @@ const faqs = [
 export default function Home() {
   const [openFaq, setOpenFaq] = useState(null);
   const [activePlan, setActivePlan] = useState(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+  const [isVideoHovered, setIsVideoHovered] = useState(false);
   const cardRefs = useRef([]);
   const scrollContainerRef = useRef(null);
   const pricingSectionRef = useRef(null);
+  const videoRef = useRef(null);
 
   // Scroll to card on tab click
   const handleTabClick = (idx) => {
@@ -139,6 +142,23 @@ export default function Home() {
     if (cardRefs.current[idx]) {
       cardRefs.current[idx].scrollIntoView({ behavior: "smooth", block: "center" });
     }
+  };
+
+  // Video controls
+  const handleVideoClick = () => {
+    if (videoRef.current) {
+      if (isVideoPlaying) {
+        videoRef.current.pause();
+        setIsVideoPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsVideoPlaying(true);
+      }
+    }
+  };
+
+  const handleVideoEnded = () => {
+    setIsVideoPlaying(false);
   };
 
   // Update active tab on window scroll, only when pricing section is in view
@@ -306,13 +326,57 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Watch How It Works
               </h3>
-              <div className="h-[350px] bg-black/50 rounded-xl flex items-center justify-center">
-                <div className="text-white/60 text-lg">
-                  <svg className="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                  <p>Video Demo Coming Soon</p>
+              <div 
+                className="h-[350px] bg-black/50 rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group"
+                onMouseEnter={() => setIsVideoHovered(true)}
+                onMouseLeave={() => setIsVideoHovered(false)}
+                onClick={handleVideoClick}
+              >
+                {/* Video Element */}
+                <video
+                  ref={videoRef}
+                  className="w-full h-full object-cover"
+                  onEnded={handleVideoEnded}
+                  muted
+                >
+                  <source src=" https://youtu.be/dQw4w9WgXcQ" type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
+                
+                {/* Overlay UI */}
+                <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                  isVideoPlaying ? 'opacity-0' : 'opacity-100'
+                }`}>
+                  <div className={`text-white/60 text-lg transition-all duration-300 ${
+                    isVideoHovered ? 'scale-110' : 'scale-100'
+                  }`}>
+                    <svg 
+                      className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                        isVideoHovered ? 'scale-110 animate-bounce' : 'scale-100'
+                      }`} 
+                      fill="currentColor" 
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    <p className={`transition-all duration-300 ${
+                      isVideoHovered ? 'text-white/80' : 'text-white/60'
+                    }`}>
+                      {isVideoPlaying ? 'Playing...' : 'Click to Play Demo'}
+                    </p>
+                  </div>
                 </div>
+                
+                {/* Pause Button (shown when playing) */}
+                {isVideoPlaying && (
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-black/50 rounded-full p-4">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                      </svg>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -407,7 +471,7 @@ export default function Home() {
       </div>
 
       {/* FAQ Section */}
-      <div className="backdrop-blur-[12px] py-20">
+      <div className="backdrop-blur-[12px] pt-20 pb-10">
 
       <section id="faq" className="px-4 max-w-5xl mx-auto min-[768px]:h-[70vh]">
         <h3 className="text-[xx-large] font-bold mb-14 text-center text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Frequently Asked Questions</h3>
