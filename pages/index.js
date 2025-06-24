@@ -143,6 +143,7 @@ export default function Home() {
   const scrollContainerRef = useRef(null);
   const pricingSectionRef = useRef(null);
   const videoRef = useRef(null);
+  const [copied, setCopied] = useState(false);
 
   // Check user authentication on mount
   useEffect(() => {
@@ -333,6 +334,31 @@ export default function Home() {
     };
   }, []);
 
+  // Copy to clipboard utility
+  const handleCopyKey = async (key) => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(key);
+      } else {
+        // fallback for older browsers/mobile
+        const textArea = document.createElement('textarea');
+        textArea.value = key;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-9999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      setCopied(false);
+      alert('Failed to copy. Please copy manually.');
+    }
+  };
+
   return (
     <>
     <Script
@@ -378,9 +404,9 @@ export default function Home() {
       )}
 
       {/* Navbar */}
-      <nav className="w-full flex items-center justify-between px-8 py-5 border-b border-neutral-800 bg-black/80 backdrop-blur-md sticky top-0 z-30">
+      <nav className="w-full flex items-center justify-between max-[768px]:px-3 px-8 py-5 border-b border-neutral-800 bg-black/80 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center gap-2">
-          <span className="text-2xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Reflect</span>
+          <span className="max-[768px]:text-[16px] text-2xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Reflect</span>
         </div>
         <div className="hidden md:flex gap-8 text-base font-medium items-center">
           {navLinks.map((link) => (
@@ -399,12 +425,12 @@ export default function Home() {
                 <div className="relative">
                   <button
                     onClick={() => setShowProfile(!showProfile)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                    className="flex items-center gap-2 max-[768px]:px-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
                   >
                     <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-white font-medium uppercase" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    <span className="text-white max-[768px]:text-[14px] font-medium uppercase" style={{ fontFamily: 'Roboto Mono, monospace' }}>
                       {user.name}
                     </span>
                     <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
@@ -415,7 +441,7 @@ export default function Home() {
                   
                   {/* Profile Dropdown */}
                   {showProfile && (
-                    <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg">
+                    <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md max-[768px]:!bg-black !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg">
                       <div className="space-y-4">
                         <div className="border-b border-white/20 pb-3">
                           <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
@@ -450,15 +476,16 @@ export default function Home() {
                             <div className="flex justify-between items-center">
                               <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Pc Key:</span>
                               <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(user.apiKey);
-                                  alert('Pc Key copied to clipboard!');
-                                }}
+                                onClick={() => handleCopyKey(user.apiKey)}
                                 className="text-blue-400 hover:text-blue-300 text-sm"
+                                type="button"
                               >
                                 Copy
                               </button>
                             </div>
+                            {copied && (
+                              <span className="ml-2 text-green-400 text-xs">Copied!</span>
+                            )}
                             <div className="bg-black/30 p-2 rounded text-xs text-white/60 font-mono break-all">
                               {user.apiKey}
                             </div>
@@ -478,10 +505,10 @@ export default function Home() {
                 </div>
               ) : (
                 <div className="flex gap-3">
-                  <Link href="/login" className="px-4 py-2 text-white hover:text-blue-400 transition-colors">
+                  <Link href="/login" className="max-[768px]:px-2 max-[768px]:text-[14px] px-4 py-2 text-white hover:text-blue-400 transition-colors">
                     Sign In
                   </Link>
-                  <Link href="/signup" className="px-4 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200">
+                  <Link href="/signup" className="max-[768px]:px-2 max-[768px]:text-[14px] px-4 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200">
                     Sign Up
                   </Link>
                 </div>

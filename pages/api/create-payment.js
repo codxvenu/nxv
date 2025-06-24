@@ -55,7 +55,7 @@ export default async function handler(req, res) {
     if (plan === 'Free Trial') {
       const startDate = new Date();
       const endDate = new Date();
-      endDate.setDate(endDate.getDate() + 7); // 7 days trial
+      endDate.setHours(endDate.getHours() + 1); // 1 hour trial
 
       await updateUserPlan(user.id, plan, startDate, endDate);
 
