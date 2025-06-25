@@ -591,118 +591,202 @@ export default function Home() {
 
       {/* Navbar */}
       <nav className="w-full flex items-center justify-between max-[768px]:px-3 px-8 py-5 border-b border-neutral-800 bg-black/80 backdrop-blur-md sticky top-0 z-30">
-        <div className="flex items-center gap-2" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+        {/* Left: Hamburger + Brand (mobile), Brand only (desktop) */}
+        <div className="flex items-center gap-2 flex-1 md:flex-none">
+          {/* Hamburger for mobile */}
+          <button
+            className="md:hidden mr-2 p-2 rounded hover:bg-white/10 focus:outline-none"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            aria-label="Open menu"
+            type="button"
+          >
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          {/* Brand name */}
           <span className="max-[768px]:text-[16px] text-2xl font-extrabold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
         </div>
-        
         {/* Desktop Navigation */}
-        <div className="hidden md:flex gap-8 text-base font-medium items-center">
+        <div className="hidden md:flex gap-8 text-base font-medium items-center flex-1 justify-center">
           {navLinks.map((link) => (
             <a key={link.name} href={link.href} className="hover:text-blue-400 transition-colors duration-200">
               {link.name}
             </a>
           ))}
         </div>
-        
-        {/* Mobile Hamburger Menu Button */}
-        
-        
-        {/* User Authentication */}
-        <div className="flex items-center gap-4">
+        {/* User Authentication/Profile (right) */}
+        <div className="flex items-center gap-4 flex-1 justify-end">
           {!isUserLoading && (
             <>
-              {user ? (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowProfile(!showProfile)}
-                    className="flex items-center gap-2 max-[768px]:px-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
-                  >
-                    <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-white max-[768px]:text-[14px] font-medium uppercase" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                      {user.name}
-                    </span>
-                    <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </button>
-                  
-                  
-                  {/* Profile Dropdown */}
-                  {showProfile && (
-                    <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md max-[768px]:!bg-black !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg">
-                      <div className="space-y-4">
-                        <div className="border-b border-white/20 pb-3">
-                          <h3 className="text-lg font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
-                            {user.name}
-                          </h3>
-                          <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                            {user.email}
-                          </p>
-                          
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Current Plan:</span>
-                            <span className="text-blue-400 font-semibold tracking-[2px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
-                              {user.currentPlan}
-                            </span>
+              {/* On mobile: show profile button if logged in, nothing if not logged in */}
+              <div className="md:hidden">
+                {user && (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowProfile(!showProfile)}
+                      className="flex items-center gap-2 px-2 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-white text-[14px] font-medium uppercase" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                        {user.name}
+                      </span>
+                      <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    {/* Profile Dropdown (mobile) */}
+                    {showProfile && (
+                      <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md !bg-black !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg z-50">
+                        <div className="space-y-4">
+                          <div className="border-b border-white/20 pb-3">
+                            <h3 className="text-lg font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                              {user.name}
+                            </h3>
+                            <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                              {user.email}
+                            </p>
                           </div>
-                          {user.planEndDate && (
-                            <div className="flex justify-between items-center">
-                              <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Expires:</span>
-                              <span className="text-white/60 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                                {new Date(user.planEndDate).toLocaleDateString()}
-                              </span>
-                            </div>
-                          )}
-                          
-                        </div>
-                        
-                        <div className="border-t border-white/20 pt-3">
                           <div className="space-y-2">
                             <div className="flex justify-between items-center">
-                              <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Pc Key:</span>
-                              <button
-                                onClick={() => handleCopyKey(user.apiKey)}
-                                className="text-blue-400 hover:text-blue-300 text-sm"
-                                type="button"
-                              >
-                                Copy
-                              </button>
+                              <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Current Plan:</span>
+                              <span className="text-blue-400 font-semibold tracking-[2px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                                {user.currentPlan}
+                              </span>
                             </div>
-                            {copied && (
-                              <span className="ml-2 text-green-400 text-xs">Copied!</span>
+                            {user.planEndDate && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Expires:</span>
+                                <span className="text-white/60 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                                  {new Date(user.planEndDate).toLocaleDateString()}
+                                </span>
+                              </div>
                             )}
-                            <div className="bg-black/30 p-2 rounded text-xs text-white/60 font-mono break-all">
-                              {user.apiKey}
+                          </div>
+                          <div className="border-t border-white/20 pt-3">
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Pc Key:</span>
+                                <button
+                                  onClick={() => handleCopyKey(user.apiKey)}
+                                  className="text-blue-400 hover:text-blue-300 text-sm"
+                                  type="button"
+                                >
+                                  Copy
+                                </button>
+                              </div>
+                              {copied && (
+                                <span className="ml-2 text-green-400 text-xs">Copied!</span>
+                              )}
+                              <div className="bg-black/30 p-2 rounded text-xs text-white/60 font-mono break-all">
+                                {user.apiKey}
+                              </div>
                             </div>
                           </div>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                            style={{ fontFamily: 'Roboto Mono, monospace' }}
+                          >
+                            Sign Out
+                          </button>
                         </div>
-                        
-                        <button
-                          onClick={handleLogout}
-                          className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
-                          style={{ fontFamily: 'Roboto Mono, monospace' }}
-                        >
-                          Sign Out
-                        </button>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex gap-3">
-                  <Link href="/login" className="max-[768px]:px-2 max-[768px]:text-[14px] px-4 py-2 text-white hover:text-blue-400 transition-colors">
-                    Sign In
-                  </Link>
-                  <Link href="/signup" className="max-[768px]:px-2 max-[768px]:text-[14px] px-4 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200">
-                    Sign Up
-                  </Link>
-                </div>
-              )}
+                    )}
+                  </div>
+                )}
+              </div>
+              {/* On desktop: show profile or sign in/up as before */}
+              <div className="hidden md:flex items-center gap-4">
+                {user ? (
+                  <div className="relative">
+                    <button
+                      onClick={() => setShowProfile(!showProfile)}
+                      className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors"
+                    >
+                      <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-white font-medium uppercase" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                        {user.name}
+                      </span>
+                      <svg className="w-4 h-4 text-white/70" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    {/* Profile Dropdown (desktop) */}
+                    {showProfile && (
+                      <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md max-[768px]:!bg-black !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg z-50">
+                        <div className="space-y-4">
+                          <div className="border-b border-white/20 pb-3">
+                            <h3 className="text-lg font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                              {user.name}
+                            </h3>
+                            <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                              {user.email}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Current Plan:</span>
+                              <span className="text-blue-400 font-semibold tracking-[2px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                                {user.currentPlan}
+                              </span>
+                            </div>
+                            {user.planEndDate && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Expires:</span>
+                                <span className="text-white/60 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                                  {new Date(user.planEndDate).toLocaleDateString()}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="border-t border-white/20 pt-3">
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Pc Key:</span>
+                                <button
+                                  onClick={() => handleCopyKey(user.apiKey)}
+                                  className="text-blue-400 hover:text-blue-300 text-sm"
+                                  type="button"
+                                >
+                                  Copy
+                                </button>
+                              </div>
+                              {copied && (
+                                <span className="ml-2 text-green-400 text-xs">Copied!</span>
+                              )}
+                              <div className="bg-black/30 p-2 rounded text-xs text-white/60 font-mono break-all">
+                                {user.apiKey}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full py-2 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                            style={{ fontFamily: 'Roboto Mono, monospace' }}
+                          >
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  // Only show sign in/up on desktop
+                  <div className="flex gap-3">
+                    <Link href="/login" className="px-4 py-2 text-white hover:text-blue-400 transition-colors">
+                      Sign In
+                    </Link>
+                    <Link href="/signup" className="px-4 py-2 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200">
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -711,7 +795,7 @@ export default function Home() {
       {/* Mobile Navigation Menu */}
       {showMobileMenu && (
         <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40">
-          <div className="absolute top-0 left-0 right-0 bg-black/90 border-b border-neutral-800 p-4">
+          <div className="absolute top-0 left-0 right-0 bg-black/90 border-b border-neutral-800 p-4 px-8">
             <div className="flex justify-between items-center">
               <span className="text-xl font-extrabold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
               <button
@@ -725,7 +809,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-6">
+          <div className="flex flex-col items-center justify-center h-fit  space-y-8 mt-[90px]">
             {navLinks.map((link) => (
               <a
                 key={link.name}
@@ -741,18 +825,18 @@ export default function Home() {
             
             {/* Mobile Auth Buttons */}
             {!isUserLoading && !user && (
-              <div className="flex flex-col gap-4 mt-8">
+              <div className="flex  gap-4 mt-16 text-center px-4">
                 <Link 
                   href="/login" 
                   onClick={() => setShowMobileMenu(false)}
-                  className="px-8 py-3 text-white hover:text-blue-400 transition-colors text-lg"
+                  className="px-8 py-3 w-1/2 text-white hover:text-blue-400 transition-colors text-lg bg-white/10 backdrop-blur-md border border-white/20 rounded-[13px]"
                 >
                   Sign In
                 </Link>
                 <Link 
                   href="/signup" 
                   onClick={() => setShowMobileMenu(false)}
-                  className="px-8 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200 text-lg"
+                  className="px-8 py-3 w-1/2 rounded-[13px] bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200 text-lg"
                 >
                   Sign Up
                 </Link>
@@ -1012,7 +1096,7 @@ export default function Home() {
                 <button 
                   onClick={() => handlePayment(plan.name)}
                   disabled={isPaymentLoading}
-                  className={`px-8 md:px-10 py-3 md:py-4 rounded-full font-semibold text-base md:text-lg transition-all duration-200 border ${
+                  className={`px-8 md:px-10 py-3 md:py-4 rounded-[13px] font-semibold text-base md:text-lg transition-all duration-200 border ${
                     isPaymentLoading 
                       ? 'bg-gray-400 text-white cursor-not-allowed' 
                       : 'bg-blue-700 text-white hover:bg-blue-800 border-blue-700/10'
@@ -1112,7 +1196,7 @@ export default function Home() {
             <div>
              <button
                onClick={() => setShowReviews(true)}
-               className="mx-auto px-6 h-full backdrop-blur-md border bg-white/10 border-white/20 rounded-4xl w-fit p-4  hover:bg-white/15 transition-all duration-300 flex flex-col items-center justify-center"
+               className="mx-auto px-6 h-full backdrop-blur-md border bg-white/10 border-white/20 rounded-[13px] w-fit p-4  hover:bg-white/15 transition-all duration-300 flex flex-col items-center justify-center"
              >
               Write a Review ✍️
              </button>
@@ -1420,10 +1504,10 @@ export default function Home() {
               Join thousands of users who have transformed how they use their phones with NxV Cast Pro.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#download" className="px-8 py-3 rounded-full bg-white text-black font-bold tracking-[2px] hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <a href="#download" className="px-8 py-3 rounded-[13px] bg-white text-black font-bold tracking-[2px] hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Download Now
               </a>
-              <a href="#pricing" className="px-8 py-3 rounded-full bg-blue-600 text-white font-bold tracking-[2px] hover:bg-blue-700 transition-all duration-200 border border-blue-600" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <a href="#pricing" className="px-8 py-3 rounded-[13px] bg-blue-600 text-white font-bold tracking-[2px] hover:bg-blue-700 transition-all duration-200 border border-blue-600" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 View Pricing
               </a>
             </div>
@@ -1455,7 +1539,7 @@ export default function Home() {
           </a>
           <a href="https://youtube.com/nvxcast" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
             {/* YouTube SVG */}
-            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a2.994 2.994 0 0 0-2.112-2.112C19.692 3.5 12 3.5 12 3.5s-7.692 0-9.386.574a2.994 2.994 0 0 0-2.112 2.112C0 7.88 0 12 0 12s0 4.12.502 5.814a2.994 2.994 0 0 0 2.112 2.112C4.308 20.5 12 20.5 12 20.5s7.692 0 9.386-.574a2.994 2.994 0 0 0 2.112-2.112C24 16.12 24 12 24 12s0-4.12-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a2.994 2.994 0 0 0-2.828.775 4.932 4.932 0 0 0 2.165-2.724c-.951.564-2.005.974-3.127 1.195A4.92 4.92 0 0 0 16.616 3c-2.73 0-4.942 2.21-4.942 4.932 0 .386.045.763.127 1.124C7.728 8.807 4.1 6.884 1.671 3.965c-.423.722-.666 1.561-.666 2.475 0 1.708.87 3.216 2.188 4.099a4.904 4.904 0 0 1-2.237-.616c-.054 2.281 1.581 4.415 3.949 4.89a4.936 4.936 0 0 1-2.224.084c.627 1.956 2.444 3.377 4.6 3.417A9.867 9.867 0 0 1 0 21.543a13.94 13.94 0 0 0 7.548 2.209c9.057 0 14.009-7.496 14.009-13.986 0-.213-.005-.425-.014-.636A9.936 9.936 0 0 0 24 4.557z"/></svg>
           </a>
         </div>
       </footer>
