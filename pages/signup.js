@@ -78,11 +78,11 @@ export default function Signup() {
           {/* Header */}
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
-              <span className="text-3xl font-extrabold tracking-widest text-white hover:text-blue-400 transition-colors" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <span className="text-3xl font-extrabold tracking-[2px] text-white hover:text-blue-400 transition-colors" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 NxV Cast
               </span>
             </Link>
-            <h1 className="text-2xl font-bold mt-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+            <h1 className="text-2xl font-bold tracking-[2px] mt-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
               Create Account
             </h1>
             <p className="text-white/70 mt-2" style={{ fontFamily: 'Roboto Mono, monospace' }}>

@@ -591,17 +591,21 @@ export default function Home() {
 
       {/* Navbar */}
       <nav className="w-full flex items-center justify-between max-[768px]:px-3 px-8 py-5 border-b border-neutral-800 bg-black/80 backdrop-blur-md sticky top-0 z-30">
-        <div className="flex items-center gap-2">
-          <span className="max-[768px]:text-[16px] text-2xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
+        <div className="flex items-center gap-2" onClick={() => setShowMobileMenu(!showMobileMenu)}>
+          <span className="max-[768px]:text-[16px] text-2xl font-extrabold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
         </div>
+        
+        {/* Desktop Navigation */}
         <div className="hidden md:flex gap-8 text-base font-medium items-center">
           {navLinks.map((link) => (
             <a key={link.name} href={link.href} className="hover:text-blue-400 transition-colors duration-200">
               {link.name}
             </a>
           ))}
-         
         </div>
+        
+        {/* Mobile Hamburger Menu Button */}
+        
         
         {/* User Authentication */}
         <div className="flex items-center gap-4">
@@ -630,7 +634,7 @@ export default function Home() {
                     <div className="absolute right-0 mt-2 w-80 bg-white/10 backdrop-blur-md max-[768px]:!bg-black !bg-[rgba(0,0,0,0.7)] border border-white/20 rounded-xl p-4 shadow-lg">
                       <div className="space-y-4">
                         <div className="border-b border-white/20 pb-3">
-                          <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                          <h3 className="text-lg font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                             {user.name}
                           </h3>
                           <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
@@ -642,7 +646,7 @@ export default function Home() {
                         <div className="space-y-2">
                           <div className="flex justify-between items-center">
                             <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>Current Plan:</span>
-                            <span className="text-blue-400 font-semibold" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                            <span className="text-blue-400 font-semibold tracking-[2px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                               {user.currentPlan}
                             </span>
                           </div>
@@ -704,18 +708,117 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* Mobile Navigation Menu */}
+      {showMobileMenu && (
+        <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40">
+          <div className="absolute top-0 left-0 right-0 bg-black/90 border-b border-neutral-800 p-4">
+            <div className="flex justify-between items-center">
+              <span className="text-xl font-extrabold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
+              <button
+                onClick={() => setShowMobileMenu(false)}
+                className="text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-center justify-center h-full space-y-8 -mt-6">
+            {navLinks.map((link) => (
+              <a
+                key={link.name}
+                href={link.href}
+                onClick={() => setShowMobileMenu(false)}
+                className="text-2xl font-medium tracking-[2px] text-white hover:text-blue-400 transition-colors duration-200 w-full text-start px-8"
+                style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
+              >
+                {link.name}
+              </a>
+            ))}
+            </div>
+            
+            {/* Mobile Auth Buttons */}
+            {!isUserLoading && !user && (
+              <div className="flex flex-col gap-4 mt-8">
+                <Link 
+                  href="/login" 
+                  onClick={() => setShowMobileMenu(false)}
+                  className="px-8 py-3 text-white hover:text-blue-400 transition-colors text-lg"
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  href="/signup" 
+                  onClick={() => setShowMobileMenu(false)}
+                  className="px-8 py-3 rounded-full bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200 text-lg"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+            
+            {/* Mobile User Profile */}
+            {!isUserLoading && user && (
+              <div className="flex flex-col items-center gap-4 mt-8">
+                <div className="text-center">
+                  <h3 className="text-xl font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                    {user.name}
+                  </h3>
+                  <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    {user.email}
+                  </p>
+                  <p className="text-blue-400 font-semibold tracking-[2px] mt-2" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                    {user.currentPlan}
+                  </p>
+                </div>
+                
+                <div className="space-y-3 w-full max-w-xs">
+                  <div className="bg-black/30 p-3 rounded">
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>PC Key:</span>
+                      <button
+                        onClick={() => handleCopyKey(user.apiKey)}
+                        className="text-blue-400 hover:text-blue-300 text-sm"
+                        type="button"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                    <div className="bg-black/50 p-2 rounded text-xs text-white/60 font-mono break-all">
+                      {user.apiKey}
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setShowMobileMenu(false);
+                    }}
+                    className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                    style={{ fontFamily: 'Roboto Mono, monospace' }}
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+      )}
+
       {/* Hero Section */}
       <div className="backdrop-blur-[12px]">
       <section id="home" className="flex flex-col md:grid md:grid-cols-2 items-center justify-between gap-8 md:gap-12 px-4 md:px-8 py-12 md:py-24 max-w-7xl mx-auto relative min-h-[80vh] md:min-h-[100vh]">
         {/* Left: Text */}
         <div className="flex-1 flex flex-col items-start justify-center max-w-xl w-full">
-          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-3xl sm:text-4xl md:text-5xl font-extrabold my-4 md:my-[10px] tracking-tight text-white leading-tight md:leading-[70px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+          <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-[2px] my-4 md:my-[10px] text-white leading-tight md:leading-[70px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
             Next-Gen Screen Mirroring
           </motion.h1>
           <motion.h2 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="text-base sm:text-lg md:text-2xl font-medium my-4 md:my-[20px] text-white" style={{ fontFamily: 'Roboto Mono, monospace' }}>
             Lightning-fast. Affordable. Built for gamers.
           </motion.h2>
-          <motion.a initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }} href="#download" className="inline-block px-6 md:px-8 py-2.5 md:py-3 rounded-full bg-white text-black text-base md:text-lg font-bold tracking-wide hover:bg-neutral-200 transition-all duration-200 border border-white/10 mt-4 md:mt-[20px]">
+          <motion.a initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }} href="#download" className="inline-block px-6 md:px-8 py-2.5 md:py-3 rounded-[10px] bg-white text-black text-base md:text-lg font-bold tracking-wide hover:bg-neutral-200 transition-all duration-200 border border-white/10 mt-4 md:mt-[20px]">
             Download Now
           </motion.a>
         </div>
@@ -734,7 +837,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }} 
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
+            className="text-3xl md:text-5xl font-extrabold tracking-[2px] mb-16 text-center text-white" 
             style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
           >
             Premium Features
@@ -752,7 +855,7 @@ export default function Home() {
                 <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
                   {feature.icon}
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                <h3 className="text-xl font-bold tracking-[2px] mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                   {feature.title}
                 </h3>
                 <p className="text-white/80 text-base leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
@@ -772,14 +875,14 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }} 
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
+            className="text-3xl md:text-5xl font-extrabold tracking-[2px] mb-16 text-center text-white" 
             style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
           >
             How NxV Cast Works
           </motion.h2>
           
           {/* Steps */}
-          <div className="grid md:grid-cols-3 gap-8 mb-16">
+          <div className="grid md:grid-cols-3 gap-8 mb-16 capitalize ">
             {howItWorksSteps.map((step, i) => (
               <motion.div
                 key={step.number}
@@ -792,7 +895,7 @@ export default function Home() {
                 <div className="w-20 h-20 mx-auto mb-6 bg-blue-600 rounded-full flex items-center justify-center text-2xl font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                   {step.number}
                 </div>
-                <h3 className="text-xl font-bold mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                <h3 className="text-xl font-bold tracking-[2px] mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                   {step.title}
                 </h3>
                 <p className="text-white/80 text-base" style={{ fontFamily: 'Roboto Mono, monospace' }}>
@@ -811,7 +914,7 @@ export default function Home() {
             className="w-full"
           >
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl min-[768px]:p-8 px-4 py-8 text-center">
-              <h3 className="text-2xl font-bold mb-4 text-white max-[768px]:mb-6" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <h3 className="text-2xl font-bold tracking-[2px] mb-4 text-white max-[768px]:mb-6" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Watch How It Works
               </h3>
               <div 
@@ -873,14 +976,14 @@ export default function Home() {
       {/* Pricing Section with Vertical Tabs */}
       <section id="pricing" className="flex flex-col md:flex-row relative min-[768px]:min-h-[400vh]" ref={pricingSectionRef}>
         {/* Left: Vertical Tabs (becomes horizontal on mobile) */}
-        <div className="w-full md:w-1/3 bg-black flex flex-col items-center justify-center px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
-          <h3 className="text-lg md:text-2xl font-bold mb-4 md:mb-8 text-white w-full text-center" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Choose Your Plan</h3>
-          <div className="flex md:flex-col flex-row gap-2 md:gap-4 w-full max-w-xs md:max-w-xs justify-center md:justify-start">
+        <div className="w-full md:w-1/3 bg-black flex flex-col items-center justify-center max-[768px]:px-0 px-2 md:px-6 py-4 md:py-8 sticky top-0 h-fit md:h-screen z-10 pt-[80px]">
+          <h3 className="text-lg md:text-2xl font-bold tracking-[2px] mb-4 md:mb-8 text-white w-full text-center" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Choose Your Plan</h3>
+          <div className="flex md:flex-col flex-row max-[768px]:gap-0  gap-2 md:gap-4 w-full lg:max-w-xs md:max-w-xs justify-center md:justify-start">
             {pricing.map((plan, idx) => (
               <button
               key={plan.name}
                 onClick={() => handleTabClick(idx)}
-                className={`px-5 max-[768px]:text-[13px]  md:px-6 py-2 md:py-3 rounded-full font-semibold transition-all duration-200 text-sm md:text-base focus:outline-none text-left ${activePlan === idx ? 'bg-blue-700 text-white shadow' : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'}`}
+                className={`max-[768px]:px-3 px-5 max-[768px]:text-[13px]  md:px-6 py-2 md:py-3 max-[768px]:py-[13px] min-[768px]:rounded-full max-[768px]:border-0 tracking-[2px] font-semibold transition-all duration-200 text-sm md:text-base focus:outline-none text-left ${activePlan === idx ? 'bg-blue-700 text-white shadow' : 'bg-white text-neutral-700 hover:bg-neutral-100 border border-neutral-200'}`}
                 style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
                 >
                 {plan.name}
@@ -899,8 +1002,8 @@ export default function Home() {
               <div
                 className="w-full max-w-md md:max-w-xl flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-neutral-200 shadow-lg px-4 md:px-8 py-8 md:py-12 mb-8 md:mb-12 max-[768px]:h-[calc(100vh-194.73px)]"
               >
-                <div className="text-2xl md:text-5xl font-bold mb-4 text-blue-700" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.name}</div>
-                <div className="text-4xl md:text-7xl font-extrabold mb-8 text-neutral-900" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.price}</div>
+                <div className="text-2xl md:text-5xl font-bold tracking-[2px] mb-4 text-blue-700" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.name}</div>
+                <div className="text-4xl md:text-7xl font-extrabold tracking-[2px] mb-8 text-neutral-900" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.price}</div>
                 <ul className="mb-8 md:mb-10 text-neutral-700 text-base md:text-xl space-y-3 text-start" style={{ fontFamily: 'Roboto Mono, monospace' }}>
                   {plan.features.map((f) => (
                     <li key={f}>• {f}</li>
@@ -931,7 +1034,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }} 
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
-            className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
+            className="text-3xl md:text-5xl font-extrabold tracking-[2px] mb-16 text-center text-white" 
             style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
           >
             What Users Say
@@ -1026,7 +1129,7 @@ export default function Home() {
                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 overflow-hidden"
              >
                <div className="flex justify-between items-center mb-4">
-                 <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                 <h3 className="text-lg font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                    Write a Review
                  </h3>
                  <button
@@ -1154,7 +1257,7 @@ export default function Home() {
             {/* Desktop Review Form - Hidden on mobile, shown on desktop */}
             <div className={showReviews ? "hidden md:block w-full max-w-[70vw] mx-auto" : "hidden"}>
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 h-full">
-                <h3 className="text-lg font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }} onClick={() => setShowReviews(false)}>
+                <h3 className="text-lg font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }} onClick={() => setShowReviews(false)}>
                   Write a Review
                 </h3>
                 
@@ -1269,7 +1372,7 @@ export default function Home() {
       <div className="backdrop-blur-[12px] pt-20 pb-10">
 
       <section id="faq" className="px-4 max-w-5xl mx-auto min-[768px]:h-[70vh]">
-        <h3 className="text-[xx-large] font-bold mb-14 text-center text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Frequently Asked Questions</h3>
+        <h3 className="text-[xx-large] font-bold tracking-[2px] mb-14 text-center text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>Frequently Asked Questions</h3>
         <div className="grid md:grid-cols-2 gap-8">
           {faqs.map((faq, i) => (
             <motion.div
@@ -1281,7 +1384,7 @@ export default function Home() {
               className="border border-neutral-800 rounded-xl bg-white text-black overflow-hidden h-fit min-w-0"
               >
               <span
-                className="block w-full text-left px-6 py-5 font-semibold flex justify-between items-center focus:outline-none" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
+                className="block w-full text-left px-6 py-5 font-semibold tracking-[2px] flex justify-between items-center focus:outline-none" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
                 onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 aria-expanded={openFaq === i}
               >
@@ -1310,17 +1413,17 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 md:p-12"
           >
-            <h2 className="text-2xl md:text-4xl font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+            <h2 className="text-2xl md:text-4xl font-bold tracking-[2px] mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
               Ready to Experience 4K 120FPS Mirroring?
             </h2>
             <p className="text-white/80 text-lg mb-8" style={{ fontFamily: 'Roboto Mono, monospace' }}>
               Join thousands of users who have transformed how they use their phones with NxV Cast Pro.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#download" className="px-8 py-3 rounded-full bg-white text-black font-bold hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <a href="#download" className="px-8 py-3 rounded-full bg-white text-black font-bold tracking-[2px] hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Download Now
               </a>
-              <a href="#pricing" className="px-8 py-3 rounded-full bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all duration-200 border border-blue-600" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <a href="#pricing" className="px-8 py-3 rounded-full bg-blue-600 text-white font-bold tracking-[2px] hover:bg-blue-700 transition-all duration-200 border border-blue-600" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 View Pricing
               </a>
             </div>
@@ -1331,7 +1434,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="w-full flex flex-col md:flex-row items-center justify-between px-8 py-8 bg-black border-t border-neutral-800  gap-4 text-sm">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
+          <span className="text-xl font-extrabold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
         </div>
         <div className="flex gap-6">
           <a href="#about" className="hover:text-blue-400 transition-colors">About</a>
