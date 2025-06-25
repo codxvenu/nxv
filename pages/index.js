@@ -1066,7 +1066,7 @@ export default function Home() {
                 Watch How It Works
               </h3>
               <div 
-                className="lg:h-[350px] bg-black/50 rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group aspect-[16/9]"
+                className="lg:h-[350px] bg-black/50 rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group max-[768px]:aspect-[16/9] mx-auto"
                 onMouseEnter={() => setIsVideoHovered(true)}
                 onMouseLeave={() => setIsVideoHovered(false)}
                 onClick={handleVideoClick}
@@ -1074,7 +1074,7 @@ export default function Home() {
                 {/* Video Element */}
                 <video
                   ref={videoRef}
-                  className="w-full h-full object-cover aspect-[16/9]"
+                  className="w-full h-full object-cover max-[768px]:aspect-[16/9] mx-auto"
                   onEnded={handleVideoEnded}
                   muted
                 >
