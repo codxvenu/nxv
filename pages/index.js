@@ -809,12 +809,12 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="w-full"
           >
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 text-center">
-              <h3 className="text-2xl font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl min-[768px]:p-8 px-4 py-8 text-center">
+              <h3 className="text-2xl font-bold mb-4 text-white max-[768px]:mb-6" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Watch How It Works
               </h3>
               <div 
-                className="h-[350px] bg-black/50 rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group"
+                className="lg:h-[350px] bg-black/50 rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group aspect-[16/9]"
                 onMouseEnter={() => setIsVideoHovered(true)}
                 onMouseLeave={() => setIsVideoHovered(false)}
                 onClick={handleVideoClick}
@@ -822,11 +822,11 @@ export default function Home() {
                 {/* Video Element */}
                 <video
                   ref={videoRef}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover aspect-[16/9]"
                   onEnded={handleVideoEnded}
                   muted
                 >
-                  <source src=" https://youtu.be/dQw4w9WgXcQ" type="video/mp4" />
+                  <source src="https://youtu.be/dQw4w9WgXcQ" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
                 
@@ -849,7 +849,7 @@ export default function Home() {
                     <p className={`transition-all duration-300 ${
                       isVideoHovered ? 'text-white/80' : 'text-white/60'
                     }`}>
-                      {isVideoPlaying ? 'Playing...' : 'Click to Play Demo'}
+                      {isVideoPlaying ? 'Playing...' : 'Click to Play Tutorial'}
                     </p>
                   </div>
                 </div>
@@ -1012,15 +1012,9 @@ export default function Home() {
             <div>
              <button
                onClick={() => setShowReviews(true)}
-               className="w-full h-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 flex flex-col items-center justify-center"
+               className="mx-auto px-6 h-full backdrop-blur-md border bg-white/10 border-white/20 rounded-4xl w-fit p-4  hover:bg-white/15 transition-all duration-300 flex flex-col items-center justify-center"
              >
-               <div className="text-3xl mb-3">✍️</div>
-               <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
-                 Write a Review
-               </h3>
-               <p className="text-white/70 text-sm text-center" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                 Share your experience with NxV Cast
-               </p>
+              Write a Review ✍️
              </button>
            </div>)}
            
@@ -1163,7 +1157,7 @@ export default function Home() {
             {/* Desktop Review Form - Hidden on mobile, shown on desktop */}
             <div className={showReviews ? "hidden md:block w-full max-w-[70vw] mx-auto" : "hidden"}>
               <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 h-full">
-                <h3 className="text-lg font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                <h3 className="text-lg font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }} onClick={() => setShowReviews(false)}>
                   Write a Review
                 </h3>
                 
