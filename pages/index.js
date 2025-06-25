@@ -1155,16 +1155,6 @@ export default function Home() {
                    >
                      {isReviewSubmitting ? 'Submitting...' : 'Submit Review'}
                    </button>
-                   
-                   {/* Temporary Approve Button for Testing */}
-                   <button
-                     type="button"
-                     onClick={approveLatestReview}
-                     className="w-fit mx-auto px-3 py-2 rounded-lg text-sm font-semibold transition-colors bg-green-600 text-white hover:bg-green-700 mt-2"
-                     style={{ fontFamily: 'Roboto Mono, monospace' }}
-                   >
-                     Approve Latest Review (Test)
-                   </button>
                  </div>
                </form>
              </motion.div>
