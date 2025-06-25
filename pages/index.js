@@ -794,8 +794,14 @@ export default function Home() {
 
       {/* Mobile Navigation Menu */}
       {showMobileMenu && (
-        <div className="md:hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-40">
-          <div className="absolute top-0 left-0 right-0 bg-black/90 border-b border-neutral-800 p-4 px-8">
+        <motion.div 
+          initial={{ x: '-100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '-100%' }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="md:hidden fixed inset-0 bg-black/90 backdrop-blur-sm z-40"
+        >
+          <div className="absolute top-0 left-0 right-0 bg-black/95 border-b border-neutral-800 p-4">
             <div className="flex justify-between items-center">
               <span className="text-xl font-extrabold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
               <button
@@ -809,68 +815,122 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex flex-col items-center justify-center h-fit  space-y-8 mt-[90px]">
-            {navLinks.map((link) => (
-              <a
+          <div className="flex flex-col items-start justify-start h-full space-y-5 mt-20 px-8">
+            {navLinks.map((link, index) => (
+              <motion.a
                 key={link.name}
                 href={link.href}
                 onClick={() => setShowMobileMenu(false)}
-                className="text-2xl font-medium tracking-[2px] text-white hover:text-blue-400 transition-colors duration-200 w-full text-start px-8"
-                style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.1, duration: 0.3 }}
+                className="flex items-center gap-3 text-lg font-[16px] tracking-[1px] text-white hover:text-blue-400 transition-colors duration-200 w-full py-3 border-b border-white/10"
+                style={{ fontFamily: 'Roboto Mono, monospace' }}
               >
+                {/* Icons for each link */}
+                {link.name === "Home" && (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                  </svg>
+                )}
+                {link.name === "Features" && (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                )}
+                {link.name === "How It Works" && (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                )}
+                {link.name === "Pricing" && (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                )}
+                {link.name === "Testimonials" && (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                )}
+                {link.name === "Q&A" && (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )}
                 {link.name}
-              </a>
+              </motion.a>
             ))}
-            </div>
             
             {/* Mobile Auth Buttons */}
             {!isUserLoading && !user && (
-              <div className="flex  gap-4 mt-16 text-center px-4">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.3 }}
+                className="flex gap-4 mt-8 w-full px-4"
+              >
                 <Link 
                   href="/login" 
                   onClick={() => setShowMobileMenu(false)}
-                  className="px-8 py-3 w-1/2 text-white hover:text-blue-400 transition-colors text-lg bg-white/10 backdrop-blur-md border border-white/20 rounded-[13px]"
+                  className="flex items-center justify-center gap-2 px-6 py-3 text-white hover:text-blue-400 transition-colors text-base bg-white/10 backdrop-blur-md border border-white/20 rounded-[13px] hover:bg-white/20"
+                  style={{ fontFamily: 'Roboto Mono, monospace' }}
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
                   Sign In
                 </Link>
                 <Link 
                   href="/signup" 
                   onClick={() => setShowMobileMenu(false)}
-                  className="px-8 py-3 w-1/2 rounded-[13px] bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200 text-lg"
+                  className="flex items-center justify-center gap-2 px-6 py-3 rounded-[13px] bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-all duration-200 text-base"
+                  style={{ fontFamily: 'Roboto Mono, monospace' }}
                 >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  </svg>
                   Sign Up
                 </Link>
-              </div>
+              </motion.div>
             )}
             
             {/* Mobile User Profile */}
             {!isUserLoading && user && (
-              <div className="flex flex-col items-center gap-4 mt-8">
-                <div className="text-center">
-                  <h3 className="text-xl font-bold tracking-[2px] text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6, duration: 0.3 }}
+                className="flex flex-col items-center gap-4 mt-8 w-full"
+              >
+                <div className="text-center w-full">
+                  <h3 className="text-xl font-bold tracking-[2px] text-white mb-2" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                     {user.name}
                   </h3>
-                  <p className="text-white/70 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                  <p className="text-white/70 text-sm mb-2" style={{ fontFamily: 'Roboto Mono, monospace' }}>
                     {user.email}
                   </p>
-                  <p className="text-blue-400 font-semibold tracking-[2px] mt-2" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                  <p className="text-blue-400 font-semibold tracking-[2px]" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                     {user.currentPlan}
                   </p>
                 </div>
                 
-                <div className="space-y-3 w-full max-w-xs">
-                  <div className="bg-black/30 p-3 rounded">
+                <div className="space-y-3 w-full">
+                  <div className="bg-black/30 p-3 rounded-lg border border-white/10">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-white/80 text-sm" style={{ fontFamily: 'Roboto Mono, monospace' }}>PC Key:</span>
                       <button
                         onClick={() => handleCopyKey(user.apiKey)}
-                        className="text-blue-400 hover:text-blue-300 text-sm"
+                        className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1"
                         type="button"
                       >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
                         Copy
                       </button>
                     </div>
-                    <div className="bg-black/50 p-2 rounded text-xs text-white/60 font-mono break-all">
+                    <div className="bg-black/50 p-2 rounded text-xs text-white/60 font-mono break-all" style={{ fontFamily: 'Roboto Mono, monospace' }}>
                       {user.apiKey}
                     </div>
                   </div>
@@ -880,15 +940,19 @@ export default function Home() {
                       handleLogout();
                       setShowMobileMenu(false);
                     }}
-                    className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                    className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2"
                     style={{ fontFamily: 'Roboto Mono, monospace' }}
                   >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                     Sign Out
                   </button>
                 </div>
-              </div>
+              </motion.div>
             )}
           </div>
+        </motion.div>
       )}
 
       {/* Hero Section */}
