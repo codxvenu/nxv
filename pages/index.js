@@ -1311,7 +1311,7 @@ export default function Home() {
                
                  {/* Conversion Banner */}
    
-        <section className="px-4 max-w-4xl mx-auto text-center">
+        <section className="px-4 max-w-4xl mx-auto text-center max-[768px]:mt-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
