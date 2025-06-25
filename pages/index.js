@@ -181,6 +181,7 @@ export default function Home() {
   const [showProfile, setShowProfile] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [reviewForm, setReviewForm] = useState({
     name: '',
     deviceModel: '',
@@ -838,7 +839,7 @@ export default function Home() {
                     isVideoHovered ? 'scale-110' : 'scale-100'
                   }`}>
                     <svg 
-                      className={`w-16 h-16 mx-auto mb-4 transition-all duration-300 ${
+                      className={`lg:w-16 lg:h-16 w-12 h-12 mx-auto  transition-all duration-300 ${
                         isVideoHovered ? 'scale-110 animate-bounce' : 'scale-100'
                       }`} 
                       fill="currentColor" 
@@ -846,11 +847,7 @@ export default function Home() {
                     >
                       <path d="M8 5v14l11-7z"/>
                     </svg>
-                    <p className={`transition-all duration-300 ${
-                      isVideoHovered ? 'text-white/80' : 'text-white/60'
-                    }`}>
-                      {isVideoPlaying ? 'Playing...' : 'Click to Play Tutorial'}
-                    </p>
+                   
                   </div>
                 </div>
                 
