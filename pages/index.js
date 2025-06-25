@@ -998,17 +998,66 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1, duration: 0.6 }}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 group"
+                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 group"
               >
-                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">
-                  {feature.icon}
+                {/* Video Box */}
+                <div className="relative mb-6 overflow-hidden rounded-xl bg-black/50 aspect-video group-hover:scale-105 transition-transform duration-300">
+                  {/* Video Placeholder with Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20"></div>
+                  
+                  {/* Animated Background Pattern */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.3),transparent_50%)] animate-pulse"></div>
+                  </div>
+                  
+                  {/* Feature Icon Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-6xl group-hover:scale-110 transition-transform duration-300 animate-pulse">
+                      {feature.icon}
+                    </div>
+                  </div>
+                  
+                  {/* Play Button Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 border border-white/30">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Corner Badge */}
+                  <div className="absolute top-3 right-3 bg-blue-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-semibold tracking-wide">
+                    PREVIEW
+                  </div>
                 </div>
-                <h3 className="text-xl font-bold tracking-[2px] mb-3 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
-                  {feature.title}
-                </h3>
-                <p className="text-white/80 text-base leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                  {feature.description}
-                </p>
+                
+                {/* Feature Content */}
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold tracking-[2px] text-white group-hover:text-blue-400 transition-colors duration-300" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                    {feature.title}
+                  </h3>
+                  <p className="text-white/80 text-sm leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    {feature.description}
+                  </p>
+                  
+                  {/* Feature Stats */}
+                  <div className="flex items-center gap-2 pt-2">
+                    <div className="flex items-center gap-1 text-blue-400 text-xs">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span style={{ fontFamily: 'Roboto Mono, monospace' }}>Active</span>
+                    </div>
+                    <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                    <div className="flex items-center gap-1 text-green-400 text-xs">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span style={{ fontFamily: 'Roboto Mono, monospace' }}>Optimized</span>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </div>
