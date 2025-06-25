@@ -53,8 +53,8 @@ export default function Login() {
       <div className="bg-cover bg-center fixed top-0 left-0 w-screen h-screen z-[-1]" style={{backgroundImage: `url('/bg.avif')`}}></div>
       <div className="min-h-screen text-white font-mono flex items-center justify-center">
         <Head>
-          <title>Login - NxV Reflect</title>
-          <meta name="description" content="Login to your NxV Reflect account" />
+          <title>Login - NxV Cast</title>
+          <meta name="description" content="Login to your NxV Cast account" />
         </Head>
 
         <motion.div
@@ -67,7 +67,7 @@ export default function Login() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
               <span className="text-3xl font-extrabold tracking-widest text-white hover:text-blue-400 transition-colors" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
-                NxV Reflect
+                NxV Cast
               </span>
             </Link>
             <h1 className="text-2xl font-bold mt-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>

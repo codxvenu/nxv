@@ -56,7 +56,7 @@ const premiumFeatures = [
 const howItWorksSteps = [
   {
     number: "1",
-    title: "Install NxV Reflect on your PC",
+    title: "Install NxV Cast on your PC",
     description: "Download and install our lightweight desktop application"
   },
   {
@@ -89,12 +89,6 @@ const testimonials = [
     feedback: "Finally found a mirroring app that actually works without lag. Worth every penny!",
     name: "Alex",
     device: "Samsung Galaxy S23"
-  },
-  {
-    rating: 5,
-    feedback: "The encryption gives me peace of mind. Best mirroring solution I've ever used.",
-    name: "Mike",
-    device: "OnePlus 11"
   }
 ];
 
@@ -153,8 +147,8 @@ const pricing = [
 
 const faqs = [
   {
-    q: "What platforms does NxV Reflect support?",
-    a: "NxV Reflect works on Windows, macOS, Android, and iOS devices.",
+    q: "What platforms does NxV Cast support?",
+    a: "NxV Cast works on Windows, macOS, Android, and iOS devices.",
   },
   {
     q: "Is there a free trial?",
@@ -185,6 +179,19 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showReviews, setShowReviews] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    name: '',
+    deviceModel: '',
+    rating: 5,
+    feedback: ''
+  });
+  const [isReviewSubmitting, setIsReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState(null);
+  const [reviewSuccess, setReviewSuccess] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [isReviewsLoading, setIsReviewsLoading] = useState(true);
   const cardRefs = useRef([]);
   const scrollContainerRef = useRef(null);
   const pricingSectionRef = useRef(null);
@@ -194,11 +201,14 @@ export default function Home() {
   // Check user authentication on mount
   useEffect(() => {
     checkAuth();
+    fetchReviews();
   }, []);
 
   const checkAuth = async () => {
     try {
-      const response = await fetch('/api/auth/me');
+      const response = await fetch('/api/auth/me', {
+        credentials: 'include'
+      });
       const data = await response.json();
       
       if (data.success) {
@@ -211,9 +221,44 @@ export default function Home() {
     }
   };
 
+  const fetchReviews = async () => {
+    try {
+      // Fetch approved reviews
+      const approvedResponse = await fetch('/api/get-reviews', {
+        credentials: 'include'
+      });
+      const approvedData = await approvedResponse.json();
+      
+      // Fetch pending reviews for testing (since new reviews start as pending)
+      const pendingResponse = await fetch('/api/get-pending-reviews', {
+        credentials: 'include'
+      });
+      const pendingData = await pendingResponse.json();
+      
+      // Combine approved and pending reviews, prioritizing approved ones
+      let allReviews = [];
+      if (approvedData.success && approvedData.reviews) {
+        allReviews = [...approvedData.reviews];
+      }
+      if (pendingData.success && pendingData.reviews) {
+        allReviews = [...allReviews, ...pendingData.reviews];
+      }
+      
+      // Take only the first 3 reviews
+      setReviews(allReviews.slice(0, 3));
+    } catch (error) {
+      console.error('Failed to fetch reviews:', error);
+    } finally {
+      setIsReviewsLoading(false);
+    }
+  };
+
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', { method: 'POST' });
+      await fetch('/api/auth/logout', { 
+        method: 'POST',
+        credentials: 'include'
+      });
       setUser(null);
       setShowProfile(false);
     } catch (error) {
@@ -282,6 +327,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           plan: plan,
           amount: amount,
@@ -300,7 +346,7 @@ export default function Home() {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
-        name: 'NxV Reflect',
+        name: 'NxV Cast',
         description: `${plan} Plan`,
         order_id: data.order_id,
         handler: async function (response) {
@@ -311,6 +357,7 @@ export default function Home() {
               headers: {
                 'Content-Type': 'application/json',
               },
+              credentials: 'include',
               body: JSON.stringify({
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_payment_id: response.razorpay_payment_id,
@@ -405,6 +452,98 @@ export default function Home() {
     }
   };
 
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!user) {
+      setReviewError('Please sign in to submit a review');
+      return;
+    }
+
+    setIsReviewSubmitting(true);
+    setReviewError(null);
+    setReviewSuccess(null);
+
+    try {
+      const response = await fetch('/api/create-review', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(reviewForm),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setReviewSuccess(data.message);
+        setReviewForm({
+          name: '',
+          deviceModel: '',
+          rating: 5,
+          feedback: ''
+        });
+        setShowReviewForm(false);
+        setShowReviews(false); // Close mobile dropdown
+        // Refresh reviews after submission to show the new review
+        await fetchReviews();
+      } else {
+        setReviewError(data.message);
+      }
+    } catch (error) {
+      setReviewError('Failed to submit review. Please try again.');
+    } finally {
+      setIsReviewSubmitting(false);
+    }
+  };
+
+  const handleReviewInputChange = (field, value) => {
+    setReviewForm(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  // Function to approve the latest review for testing
+  const approveLatestReview = async () => {
+    try {
+      const response = await fetch('/api/get-pending-reviews', {
+        credentials: 'include'
+      });
+      const data = await response.json();
+      
+      if (data.success && data.reviews && data.reviews.length > 0) {
+        const latestReview = data.reviews[0];
+        
+        const approveResponse = await fetch('/api/approve-review', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            reviewId: latestReview.id
+          }),
+        });
+        
+        const approveData = await approveResponse.json();
+        
+        if (approveData.success) {
+          alert('Review approved! Refreshing reviews...');
+          await fetchReviews();
+        } else {
+          alert('Failed to approve review');
+        }
+      } else {
+        alert('No pending reviews found');
+      }
+    } catch (error) {
+      console.error('Failed to approve review:', error);
+      alert('Failed to approve review');
+    }
+  };
+
   return (
     <>
     <Script
@@ -414,7 +553,7 @@ export default function Home() {
     <div className="bg-cover bg-center fixed top-0 left-0 w-screen h-screen z-[-1]" style={{backgroundImage: `url('/bg.avif')`}}></div>
     <div className=" min-h-screen text-white font-mono">
       <Head>
-        <title>NxV Reflect – Next-Gen Screen Mirroring</title>
+        <title>NxV Cast – Next-Gen Screen Mirroring</title>
         <meta name="description" content="Ultra low latency screen mirroring app. Experience lightning-fast mirroring at an affordable price." />
       </Head>
 
@@ -452,7 +591,7 @@ export default function Home() {
       {/* Navbar */}
       <nav className="w-full flex items-center justify-between max-[768px]:px-3 px-8 py-5 border-b border-neutral-800 bg-black/80 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center gap-2">
-          <span className="max-[768px]:text-[16px] text-2xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Reflect</span>
+          <span className="max-[768px]:text-[16px] text-2xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
         </div>
         <div className="hidden md:flex gap-8 text-base font-medium items-center">
           {navLinks.map((link) => (
@@ -635,7 +774,7 @@ export default function Home() {
             className="text-3xl md:text-5xl font-extrabold mb-16 text-center text-white" 
             style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
           >
-            How NxV Reflect Works
+            How NxV Cast Works
           </motion.h2>
           
           {/* Steps */}
@@ -765,7 +904,7 @@ export default function Home() {
               >
                 <div className="text-2xl md:text-5xl font-bold mb-4 text-blue-700" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.name}</div>
                 <div className="text-4xl md:text-7xl font-extrabold mb-8 text-neutral-900" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>{plan.price}</div>
-                <ul className="mb-8 md:mb-10 text-neutral-700 text-base md:text-xl space-y-3" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                <ul className="mb-8 md:mb-10 text-neutral-700 text-base md:text-xl space-y-3 text-start" style={{ fontFamily: 'Roboto Mono, monospace' }}>
                   {plan.features.map((f) => (
                     <li key={f}>• {f}</li>
                   ))}
@@ -800,29 +939,347 @@ export default function Home() {
           >
             What Users Say
           </motion.h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {testimonials.map((testimonial, i) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300"
-              >
-                <div className="flex mb-4">
-                  {[...Array(testimonial.rating)].map((_, i) => (
-                    <span key={i} className="text-yellow-400 text-lg">⭐</span>
-                  ))}
+          
+          {/* Reviews Grid - Show existing reviews first */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {isReviewsLoading ? (
+              // Loading skeleton
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 animate-pulse">
+                  <div className="flex mb-4">
+                    {[...Array(5)].map((_, j) => (
+                      <span key={j} className="text-gray-400 text-lg">⭐</span>
+                    ))}
+                  </div>
+                  <div className="h-20 bg-white/10 rounded mb-4"></div>
+                  <div className="h-4 bg-white/10 rounded w-1/2"></div>
                 </div>
-                <p className="text-white/90 text-sm mb-4 leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                  "{testimonial.feedback}"
-                </p>
-                <div className="text-white/70 text-xs" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-                  {testimonial.name} • {testimonial.device}
-                </div>
-              </motion.div>
-            ))}
+              ))
+            ) : reviews.length > 0 ? (
+              reviews.map((review, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300"
+                >
+                  <div className="flex mb-4">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <span key={i} className="text-yellow-400 text-lg">⭐</span>
+                    ))}
+                  </div>
+                  <p className="text-white/90 text-sm mb-4 leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    "{review.feedback}"
+                  </p>
+                  <div className="text-white/70 text-xs" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    {review.name} • {review.device_model}
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              // Fallback to static testimonials if no reviews
+              testimonials.map((testimonial, i) => (
+                <motion.div
+                  key={testimonial.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.6 }}
+                  className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300"
+                >
+                  <div className="flex mb-4">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <span key={i} className="text-yellow-400 text-lg">⭐</span>
+                    ))}
+                  </div>
+                  <p className="text-white/90 text-sm mb-4 leading-relaxed" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    "{testimonial.feedback}"
+                  </p>
+                  <div className="text-white/70 text-xs" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                    {testimonial.name} • {testimonial.device}
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+
+          {/* Review Form Section - Horizontal on big devices */}
+          <div className=" md:grid-cols-2 gap-6">
+            {/* Mobile Review Button - Only shown on mobile */}
+            {!showReviews && (
+            <div>
+             <button
+               onClick={() => setShowReviews(true)}
+               className="w-full h-full bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 hover:bg-white/15 transition-all duration-300 flex flex-col items-center justify-center"
+             >
+               <div className="text-3xl mb-3">✍️</div>
+               <h3 className="text-lg font-bold text-white mb-2" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                 Write a Review
+               </h3>
+               <p className="text-white/70 text-sm text-center" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                 Share your experience with NxV Cast
+               </p>
+             </button>
+           </div>)}
+           
+           {/* Mobile Review Form Dropdown */}
+           {showReviews && (
+           <div className="md:hidden col-span-full">
+             <motion.div
+               initial={{ opacity: 0, height: 0 }}
+               animate={{ opacity: 1, height: "auto" }}
+               exit={{ opacity: 0, height: 0 }}
+               transition={{ duration: 0.3, ease: "easeInOut" }}
+               className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 overflow-hidden"
+             >
+               <div className="flex justify-between items-center mb-4">
+                 <h3 className="text-lg font-bold text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                   Write a Review
+                 </h3>
+                 <button
+                   onClick={() => setShowReviews(false)}
+                   className="text-white/70 hover:text-white text-xl"
+                 >
+                   ×
+                 </button>
+               </div>
+               
+               {/* Review Status Messages */}
+               {reviewSuccess && (
+                 <div className="mb-4 p-2 bg-green-500/20 border border-green-400/50 text-green-300 rounded text-sm">
+                   {reviewSuccess}
+                 </div>
+               )}
+
+               {reviewError && (
+                 <div className="mb-4 p-2 bg-red-500/20 border border-red-400/50 text-red-300 rounded text-sm">
+                   {reviewError}
+                 </div>
+               )}
+
+               <form onSubmit={handleReviewSubmit} className="space-y-4">
+                 {/* Name Field */}
+                 <div>
+                   <label className="block text-sm font-medium text-white/80 mb-2" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                     Your Name *
+                   </label>
+                   <input
+                     type="text"
+                     value={reviewForm.name}
+                     onChange={(e) => handleReviewInputChange('name', e.target.value)}
+                     className="w-full px-3 py-2 text-sm border border-white/20 rounded bg-white/10 text-white placeholder-white/50 focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+                     placeholder="Enter your name"
+                     required
+                   />
+                 </div>
+
+                 {/* Device Model Field */}
+                 <div>
+                   <label className="block text-sm font-medium text-white/80 mb-2" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                     Device Model *
+                   </label>
+                   <input
+                     type="text"
+                     value={reviewForm.deviceModel}
+                     onChange={(e) => handleReviewInputChange('deviceModel', e.target.value)}
+                     className="w-full px-3 py-2 text-sm border border-white/20 rounded bg-white/10 text-white placeholder-white/50 focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+                     placeholder="e.g., iPhone 15 Pro"
+                     required
+                   />
+                 </div>
+
+                 {/* Rating Field */}
+                 <div>
+                   <label className="block text-sm font-medium text-white/80 mb-2" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                     Rating *
+                   </label>
+                   <div className="flex gap-2">
+                     {[1, 2, 3, 4, 5].map((star) => (
+                       <button
+                         key={star}
+                         type="button"
+                         onClick={() => handleReviewInputChange('rating', star)}
+                         className={`text-xl transition-colors ${
+                           star <= reviewForm.rating ? 'text-yellow-400' : 'text-white/30'
+                         }`}
+                       >
+                         ⭐
+                       </button>
+                     ))}
+                   </div>
+                   <p className="text-sm text-white/60 mt-1">
+                     {reviewForm.rating} out of 5 stars
+                   </p>
+                 </div>
+
+                 {/* Feedback Field */}
+                 <div>
+                   <label className="block text-sm font-medium text-white/80 mb-2" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                     Your Review *
+                   </label>
+                   <textarea
+                     value={reviewForm.feedback}
+                     onChange={(e) => handleReviewInputChange('feedback', e.target.value)}
+                     className="w-full px-3 py-2 text-sm border border-white/20 rounded bg-white/10 text-white placeholder-white/50 focus:ring-1 focus:ring-blue-400 focus:border-transparent resize-none"
+                     rows="4"
+                     placeholder="Share your experience..."
+                     required
+                     minLength="10"
+                   />
+                   <p className="text-sm text-white/60 mt-1">
+                     Min 10 characters
+                   </p>
+                 </div>
+
+                 {/* Submit Button */}
+                 <div className="flex gap-3 pt-2">
+                   <button
+                     type="button"
+                     onClick={() => setShowReviews(false)}
+                     className="flex-1 px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/10 transition-colors"
+                     style={{ fontFamily: 'Roboto Mono, monospace' }}
+                   >
+                     Cancel
+                   </button>
+                   <button
+                     type="submit"
+                     disabled={isReviewSubmitting}
+                     className={`flex-1 px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                       isReviewSubmitting
+                         ? 'bg-gray-500 text-white cursor-not-allowed'
+                         : 'bg-blue-600 text-white hover:bg-blue-700'
+                     }`}
+                     style={{ fontFamily: 'Roboto Mono, monospace' }}
+                   >
+                     {isReviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                   </button>
+                   
+                   {/* Temporary Approve Button for Testing */}
+                   <button
+                     type="button"
+                     onClick={approveLatestReview}
+                     className="w-fit mx-auto px-3 py-2 rounded-lg text-sm font-semibold transition-colors bg-green-600 text-white hover:bg-green-700 mt-2"
+                     style={{ fontFamily: 'Roboto Mono, monospace' }}
+                   >
+                     Approve Latest Review (Test)
+                   </button>
+                 </div>
+               </form>
+             </motion.div>
+           </div>)}
+
+            {/* Desktop Review Form - Hidden on mobile, shown on desktop */}
+            <div className={showReviews ? "hidden md:block w-full max-w-[70vw] mx-auto" : "hidden"}>
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 h-full">
+                <h3 className="text-lg font-bold mb-4 text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+                  Write a Review
+                </h3>
+                
+                {/* Review Status Messages */}
+                {reviewSuccess && (
+                  <div className="mb-4 p-2 bg-green-500/20 border border-green-400/50 text-green-300 rounded text-sm">
+                    {reviewSuccess}
+                  </div>
+                )}
+
+                {reviewError && (
+                  <div className="mb-4 p-2 bg-red-500/20 border border-red-400/50 text-red-300 rounded text-sm">
+                    {reviewError}
+                  </div>
+                )}
+
+                <form onSubmit={handleReviewSubmit} className="space-y-3">
+                  {/* Name Field */}
+                  <div>
+                    <label className="block text-xs font-medium text-white/80 mb-1" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                      Your Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={reviewForm.name}
+                      onChange={(e) => handleReviewInputChange('name', e.target.value)}
+                      className="w-full px-2 py-1 text-sm border border-white/20 rounded bg-white/10 text-white placeholder-white/50 focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+                      placeholder="Enter your name"
+                      required
+                    />
+                  </div>
+
+                  {/* Device Model Field */}
+                  <div>
+                    <label className="block text-xs font-medium text-white/80 mb-1" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                      Device Model *
+                    </label>
+                    <input
+                      type="text"
+                      value={reviewForm.deviceModel}
+                      onChange={(e) => handleReviewInputChange('deviceModel', e.target.value)}
+                      className="w-full px-2 py-1 text-sm border border-white/20 rounded bg-white/10 text-white placeholder-white/50 focus:ring-1 focus:ring-blue-400 focus:border-transparent"
+                      placeholder="e.g., iPhone 15 Pro"
+                      required
+                    />
+                  </div>
+
+                  {/* Rating Field */}
+                  <div>
+                    <label className="block text-xs font-medium text-white/80 mb-1" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                      Rating *
+                    </label>
+                    <div className="flex gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => handleReviewInputChange('rating', star)}
+                          className={`text-lg transition-colors ${
+                            star <= reviewForm.rating ? 'text-yellow-400' : 'text-white/30'
+                          }`}
+                        >
+                          ⭐
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-xs text-white/60 mt-1">
+                      {reviewForm.rating} out of 5 stars
+                    </p>
+                  </div>
+
+                  {/* Feedback Field */}
+                  <div>
+                    <label className="block text-xs font-medium text-white/80 mb-1" style={{ fontFamily: 'Roboto Mono, monospace' }}>
+                      Your Review *
+                    </label>
+                    <textarea
+                      value={reviewForm.feedback}
+                      onChange={(e) => handleReviewInputChange('feedback', e.target.value)}
+                      className="w-full px-2 py-1 text-sm border border-white/20 rounded bg-white/10 text-white placeholder-white/50 focus:ring-1 focus:ring-blue-400 focus:border-transparent resize-none"
+                      rows="3"
+                      placeholder="Share your experience..."
+                      required
+                      minLength="10"
+                    />
+                    <p className="text-xs text-white/60 mt-1">
+                      Min 10 characters
+                    </p>
+                  </div>
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={isReviewSubmitting}
+                    className={`w-fit mx-auto px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                      isReviewSubmitting
+                        ? 'bg-gray-500 text-white cursor-not-allowed'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                    style={{ fontFamily: 'Roboto Mono, monospace' }}
+                  >
+                    {isReviewSubmitting ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </section>
       </div>
@@ -861,9 +1318,9 @@ export default function Home() {
         </div>
       </section>
 
-                </div>
+               
                  {/* Conversion Banner */}
-      <div className="backdrop-blur-[12px] py-16">
+   
         <section className="px-4 max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -876,7 +1333,7 @@ export default function Home() {
               Ready to Experience 4K 120FPS Mirroring?
             </h2>
             <p className="text-white/80 text-lg mb-8" style={{ fontFamily: 'Roboto Mono, monospace' }}>
-              Join thousands of users who have transformed how they use their phones with NxV Reflect Pro.
+              Join thousands of users who have transformed how they use their phones with NxV Cast Pro.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a href="#download" className="px-8 py-3 rounded-full bg-white text-black font-bold hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
@@ -889,10 +1346,11 @@ export default function Home() {
           </motion.div>
         </section>
       </div>
+      
       {/* Footer */}
       <footer className="w-full flex flex-col md:flex-row items-center justify-between px-8 py-8 bg-black border-t border-neutral-800  gap-4 text-sm">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Reflect</span>
+          <span className="text-xl font-extrabold tracking-widest text-white" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>NxV Cast</span>
         </div>
         <div className="flex gap-6">
           <a href="#about" className="hover:text-blue-400 transition-colors">About</a>
