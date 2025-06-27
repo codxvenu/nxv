@@ -24,32 +24,38 @@ const premiumFeatures = [
   {
     icon: "⚡",
     title: "Ultra-Low Latency",
-    description: "Experience near real-time mirroring with our optimized streaming technology that reduces lag to under 50ms."
+    description: "Experience near real-time mirroring with our optimized streaming technology that reduces lag to under 50ms.",
+    videoUrl: "/120fps.mp4"
   },
   {
     icon: "🖥️",
     title: "4K Resolution",
-    description: "Mirror your phone screen in stunning 4K resolution with HDR support for the most vibrant colors."
+    description: "Mirror your phone screen in stunning 4K resolution with HDR support for the most vibrant colors.",
+    videoUrl: "https://keysgen.site/nvcast/videos/4k-Gameplay.mp4"
   },
   {
     icon: "🎯",
     title: "120FPS Smoothness",
-    description: "Buttery smooth mirroring at 120 frames per second makes gaming and scrolling feel native."
+    description: "Buttery smooth mirroring at 120 frames per second makes gaming and scrolling feel native.",
+    videoUrl: "https://keysgen.site/nvcast/videos/120-Fps.mp4"
   },
   {
     icon: "📶",
     title: "Wireless & Wired",
-    description: "Connect via WiFi for convenience or USB for maximum performance and stability."
+    description: "Connect via WiFi for convenience or USB for maximum performance and stability.",
+    videoUrl: "https://keysgen.site/nvcast/videos/Wireless-and-Wired.mp4"
   },
   {
     icon: "🔒",
     title: "End-to-End Encryption",
-    description: "Your data stays private with military-grade encryption during transmission."
+    description: "Your data stays private with military-grade encryption during transmission.",
+    videoUrl: "/120fps.mp4"
   },
   {
     icon: "🎮",
     title: "Game Mode",
-    description: "Special optimizations for mobile gaming with controller support and performance tuning."
+    description: "Special optimizations for mobile gaming with controller support and performance tuning.",
+    videoUrl: "/120fps.mp4"
   }
 ];
 
@@ -193,10 +199,12 @@ export default function Home() {
   const [reviewSuccess, setReviewSuccess] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [isReviewsLoading, setIsReviewsLoading] = useState(true);
+  const [featureVideosPlaying, setFeatureVideosPlaying] = useState({});
   const cardRefs = useRef([]);
   const scrollContainerRef = useRef(null);
   const pricingSectionRef = useRef(null);
   const videoRef = useRef(null);
+  const featureVideoRefs = useRef({});
   const [copied, setCopied] = useState(false);
 
   // Check user authentication on mount
@@ -290,6 +298,24 @@ export default function Home() {
 
   const handleVideoEnded = () => {
     setIsVideoPlaying(false);
+  };
+
+  // Feature video controls
+  const handleFeatureVideoClick = (featureIndex) => {
+    const videoRef = featureVideoRefs.current[featureIndex];
+    if (videoRef) {
+      if (featureVideosPlaying[featureIndex]) {
+        videoRef.pause();
+        setFeatureVideosPlaying(prev => ({ ...prev, [featureIndex]: false }));
+      } else {
+        videoRef.play();
+        setFeatureVideosPlaying(prev => ({ ...prev, [featureIndex]: true }));
+      }
+    }
+  };
+
+  const handleFeatureVideoEnded = (featureIndex) => {
+    setFeatureVideosPlaying(prev => ({ ...prev, [featureIndex]: false }));
   };
 
   // Payment handlers
@@ -1002,32 +1028,64 @@ export default function Home() {
               >
                 {/* Video Box */}
                 <div className="relative mb-6 overflow-hidden rounded-xl bg-black/50 aspect-video group-hover:scale-105 transition-transform duration-300">
-                  {/* Video Placeholder with Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20"></div>
+                  {/* Video Element */}
+                  <video
+                    ref={el => featureVideoRefs.current[i] = el}
+                    className={`w-full h-full object-cover transition-opacity duration-500 ${
+                      featureVideosPlaying[i] ? 'opacity-100' : 'opacity-0'
+                    }`}
+                    onEnded={() => handleFeatureVideoEnded(i)}
+                    muted
+                    loop
+                  >
+                    <source src={feature.videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
                   
-                  {/* Animated Background Pattern */}
-                  <div className="absolute inset-0 opacity-20">
+                  {/* Video Placeholder with Gradient (shown when video not playing) */}
+                  <div className={`absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 transition-opacity duration-500 ${
+                    featureVideosPlaying[i] ? 'opacity-0' : 'opacity-100'
+                  }`}></div>
+                  
+                  {/* Animated Background Pattern (shown when video not playing) */}
+                  <div className={`absolute inset-0 transition-opacity duration-500 ${
+                    featureVideosPlaying[i] ? 'opacity-0' : 'opacity-20'
+                  }`}>
                     <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.3),transparent_50%)] animate-pulse"></div>
                   </div>
                   
-                  {/* Feature Icon Overlay */}
-                  <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Feature Icon Overlay (shown when video not playing) */}
+                  <div className={`absolute inset-0 flex items-center justify-center transition-opacity duration-500 ${
+                    featureVideosPlaying[i] ? 'opacity-0' : 'opacity-100'
+                  }`}>
                     <div className="text-6xl group-hover:scale-110 transition-transform duration-300 animate-pulse">
                       {feature.icon}
                     </div>
                   </div>
                   
-                  {/* Play Button Overlay */}
+                  {/* Play/Pause Button Overlay */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <div className="bg-white/20 backdrop-blur-sm rounded-full p-4 border border-white/30">
-                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleFeatureVideoClick(i);
+                      }}
+                      className="bg-gradient-to-r from-blue-600/80 to-purple-600/80 backdrop-blur-sm rounded-full p-4 border border-white/30 hover:from-blue-500/90 hover:to-purple-500/90 transition-all duration-300 hover:scale-110"
+                    >
+                      {featureVideosPlaying[i] ? (
+                        <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                      ) : (
+                        <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z"/>
+                        </svg>
+                      )}
+                    </button>
                   </div>
                   
                   {/* Corner Badge */}
-                  <div className="absolute top-3 right-3 bg-blue-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-semibold tracking-wide">
+                  <div className={`absolute top-3 right-3 bg-blue-600/80 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full font-semibold tracking-wide ${ featureVideosPlaying[i] ? 'opacity-0' : 'opacity-20' }`}>
                     PREVIEW
                   </div>
                 </div>
