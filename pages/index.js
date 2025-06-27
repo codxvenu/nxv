@@ -31,19 +31,19 @@ const premiumFeatures = [
     icon: "🖥️",
     title: "4K Resolution",
     description: "Mirror your phone screen in stunning 4K resolution with HDR support for the most vibrant colors.",
-    videoUrl: "/4k.mp4"
+    videoUrl: "https://keysgen.site/nvcast/videos/4k-Gameplay.mp4"
   },
   {
     icon: "🎯",
     title: "120FPS Smoothness",
     description: "Buttery smooth mirroring at 120 frames per second makes gaming and scrolling feel native.",
-    videoUrl: "/120fps.mp4"
+    videoUrl: "https://keysgen.site/nvcast/videos/120-Fps.mp4"
   },
   {
     icon: "📶",
     title: "Wireless & Wired",
     description: "Connect via WiFi for convenience or USB for maximum performance and stability.",
-    videoUrl: "/120fps.mp4"
+    videoUrl: "https://keysgen.site/nvcast/videos/Wireless-and-Wired.mp4"
   },
   {
     icon: "🔒",
