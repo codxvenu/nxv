@@ -41,21 +41,9 @@ const premiumFeatures = [
   },
   {
     icon: "📶",
-    title: "Wireless & Wired",
-    description: "Connect via WiFi for convenience or USB for maximum performance and stability.",
+    title: "Powerful & Wired",
+    description: "Connect via  USB for maximum performance and stability.",
     videoUrl: "https://keysgen.site/nvcast/videos/Wireless-and-Wired.mp4"
-  },
-  {
-    icon: "🔒",
-    title: "End-to-End Encryption",
-    description: "Your data stays private with military-grade encryption during transmission.",
-    videoUrl: "/120fps.mp4"
-  },
-  {
-    icon: "🎮",
-    title: "Game Mode",
-    description: "Special optimizations for mobile gaming with controller support and performance tuning.",
-    videoUrl: "/120fps.mp4"
   }
 ];
 
@@ -142,7 +130,6 @@ const pricing = [
       "Up to 4K (2160p)",
       "Max bitrate",
       "30–240 FPS ⚡",
-      "Gaming mode 🎮",
       "All Pro features",
       "Early access"
     ],
@@ -582,6 +569,7 @@ export default function Home() {
       <Head>
         <title>NxV Cast – Next-Gen Screen Mirroring</title>
         <meta name="description" content="Ultra low latency screen mirroring app. Experience lightning-fast mirroring at an affordable price." />
+        <link rel="icon" href="/icos.png" />
       </Head>
 
       {/* Payment Status Notifications */}
@@ -970,7 +958,7 @@ export default function Home() {
                     style={{ fontFamily: 'Roboto Mono, monospace' }}
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
                     Sign Out
                   </button>
@@ -1037,6 +1025,7 @@ export default function Home() {
                     onEnded={() => handleFeatureVideoEnded(i)}
                     muted
                     loop
+                    playsInline
                   >
                     <source src={feature.videoUrl} type="video/mp4" />
                     Your browser does not support the video tag.
@@ -1184,6 +1173,7 @@ export default function Home() {
                   className="w-full h-full object-cover max-[768px]:aspect-[16/9] mx-auto"
                   onEnded={handleVideoEnded}
                   muted
+                  playsInline
                 >
                   <source src="https://youtu.be/dQw4w9WgXcQ" type="video/mp4" />
                   Your browser does not support the video tag.
