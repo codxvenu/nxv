@@ -25,7 +25,7 @@ const premiumFeatures = [
     icon: "⚡",
     title: "Ultra-Low Latency",
     description: "Experience near real-time mirroring with our optimized streaming technology that reduces lag to under 50ms.",
-    videoUrl: "/120fps.mp4"
+    videoUrl: "https://keysgen.site/nvcast/videos/latency.mp4"
   },
   {
     icon: "🖥️",
