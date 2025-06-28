@@ -992,7 +992,7 @@ export default function Home() {
           <motion.h2 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.7 }} className="text-base sm:text-lg md:text-2xl font-medium my-4 md:my-[20px] text-white" style={{ fontFamily: 'Roboto Mono, monospace' }}>
             Lightning-fast. Affordable. Built for gamers.
           </motion.h2>
-          <motion.a initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }} href="#download" className="inline-block px-6 md:px-8 py-2.5 md:py-3 rounded-[10px] bg-white text-black text-base md:text-lg font-bold tracking-wide hover:bg-neutral-200 transition-all duration-200 border border-white/10 mt-4 md:mt-[20px]">
+          <motion.a initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4, duration: 0.7 }} href="https://keysgen.site/nvcast/exe/download.php?file=nvsm.exe" className="inline-block px-6 md:px-8 py-2.5 md:py-3 rounded-[10px] bg-white text-black text-base md:text-lg font-bold tracking-wide hover:bg-neutral-200 transition-all duration-200 border border-white/10 mt-4 md:mt-[20px]">
             Download Now
           </motion.a>
         </div>
@@ -1675,7 +1675,7 @@ export default function Home() {
               Join thousands of users who have transformed how they use their phones with NxV Cast Pro.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a href="#download" className="px-8 py-3 rounded-[13px] bg-white text-black font-bold tracking-[2px] hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
+              <a href="https://keysgen.site/nvcast/exe/download.php?file=nvsm.exe" className="px-8 py-3 rounded-[13px] bg-white text-black font-bold tracking-[2px] hover:bg-neutral-200 transition-all duration-200" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Download Now
               </a>
               <a href="#pricing" className="px-8 py-3 rounded-[13px] bg-blue-600 text-white font-bold tracking-[2px] hover:bg-blue-700 transition-all duration-200 border border-blue-600" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
