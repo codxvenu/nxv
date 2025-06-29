@@ -68,9 +68,7 @@ export default async function handler(req, res) {
           id: updatedUser.id,
           name: updatedUser.name,
           email: updatedUser.email,
-          currentPlan: updatedUser.current_plan,
-          planStartDate: updatedUser.plan_start_date,
-          planEndDate: updatedUser.plan_end_date
+          currentPlan: updatedUser.current_plan
         }
       });
     }

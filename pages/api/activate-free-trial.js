@@ -1,5 +1,4 @@
-import crypto from 'crypto';
-import { verifyToken, findUserById, updatePaymentStatus, upgradeUserPlan } from '../../lib/db';
+import { verifyToken, findUserById, upgradeUserPlan } from '../../lib/db';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -32,44 +31,22 @@ export default async function handler(req, res) {
       });
     }
 
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } = req.body;
-
-    // Verify the payment signature
-    const text = `${razorpay_order_id}|${razorpay_payment_id}`;
-    const signature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(text)
-      .digest('hex');
-
-    if (signature !== razorpay_signature) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid payment signature' 
-      });
-    }
-
-    // Update payment status in database
-    await updatePaymentStatus(razorpay_order_id, razorpay_payment_id, 'completed');
-
-    // Upgrade user plan using the new logic
-    const upgradeResult = await upgradeUserPlan(user.id, plan);
+    // Activate free trial using the upgrade logic
+    const upgradeResult = await upgradeUserPlan(user.id, 'Free Trial');
 
     res.status(200).json({
       success: true,
       message: upgradeResult.message,
-      payment_id: razorpay_payment_id,
-      order_id: razorpay_order_id,
-      plan: plan,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
-        currentPlan: plan
+        currentPlan: 'Free Trial'
       }
     });
 
   } catch (error) {
-    console.error('Payment verification error:', error);
+    console.error('Free trial activation error:', error);
     
     // Handle specific upgrade errors
     if (error.message.includes('Cannot downgrade') || 
@@ -84,7 +61,7 @@ export default async function handler(req, res) {
     
     res.status(500).json({ 
       success: false, 
-      message: 'Failed to verify payment',
+      message: 'Failed to activate free trial',
       error: error.message 
     });
   }

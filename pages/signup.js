@@ -42,7 +42,7 @@ export default function Signup() {
       const data = await response.json();
 
       if (data.success) {
-        router.push("/login?message=Account created successfully! Please sign in.");
+        router.replace("/login?message=Account created successfully! Please sign in.");
       } else {
         setError(data.message || "Signup failed");
       }

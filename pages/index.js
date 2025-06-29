@@ -4,6 +4,8 @@ import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import Script from "next/script";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useAuth } from "@/lib/authContext";
 
 const navLinks = [
   { name: "Home", href: "#home" },
@@ -169,8 +171,6 @@ export default function Home() {
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
   const [paymentSuccess, setPaymentSuccess] = useState(null);
-  const [user, setUser] = useState(null);
-  const [isUserLoading, setIsUserLoading] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [showReviews, setShowReviews] = useState(false);
@@ -193,29 +193,13 @@ export default function Home() {
   const videoRef = useRef(null);
   const featureVideoRefs = useRef({});
   const [copied, setCopied] = useState(false);
+  const router = useRouter();
+  const { user, isLoading: isUserLoading, logout, checkAuth } = useAuth();
 
-  // Check user authentication on mount
+  // Fetch reviews on mount
   useEffect(() => {
-    checkAuth();
     fetchReviews();
   }, []);
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch('/api/auth/me', {
-        credentials: 'include'
-      });
-      const data = await response.json();
-      
-      if (data.success) {
-        setUser(data.user);
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-    } finally {
-      setIsUserLoading(false);
-    }
-  };
 
   const fetchReviews = async () => {
     try {
@@ -250,16 +234,8 @@ export default function Home() {
   };
 
   const handleLogout = async () => {
-    try {
-      await fetch('/api/auth/logout', { 
-        method: 'POST',
-        credentials: 'include'
-      });
-      setUser(null);
-      setShowProfile(false);
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+    await logout();
+    setShowProfile(false);
   };
 
   // Scroll to card on tab click
@@ -312,6 +288,22 @@ export default function Home() {
       return;
     }
 
+    // Check if user has a paid plan but no end date (license not activated)
+    if (user.currentPlan && user.currentPlan !== 'Free Trial' && !user.planEndDate) {
+      setPaymentError('License not activated. Please activate your current plan in the desktop app before purchasing a new plan.');
+      return;
+    }
+
+    // Check if user is trying to downgrade
+    const planHierarchy = ['Free Trial', 'Basic', 'Pro', 'Premium'];
+    const currentPlanIndex = planHierarchy.indexOf(user.currentPlan || 'Free Trial');
+    const newPlanIndex = planHierarchy.indexOf(plan);
+    
+    if (newPlanIndex < currentPlanIndex) {
+      setPaymentError(`Cannot downgrade from ${user.currentPlan} to ${plan}. Upgrades must be to higher-tier plans only.`);
+      return;
+    }
+
     setIsPaymentLoading(true);
     setPaymentError(null);
     setPaymentSuccess(null);
@@ -328,9 +320,30 @@ export default function Home() {
       const amount = planAmounts[plan];
 
       if (plan === 'Free Trial') {
-        // Handle free trial
-        setPaymentSuccess('Free trial activated successfully!');
-        await checkAuth(); // Refresh user data
+        // Handle free trial using new API
+        const response = await fetch('/api/activate-free-trial', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setPaymentSuccess(data.message);
+          await checkAuth(); // Refresh user data
+        } else {
+          setPaymentError(data.message);
+        }
+        setIsPaymentLoading(false);
+        return;
+      }
+
+      // Check if user is trying to purchase the same plan
+      if (user.currentPlan === plan) {
+        setPaymentError(`You are already on the ${plan} plan.`);
         setIsPaymentLoading(false);
         return;
       }
@@ -383,7 +396,7 @@ export default function Home() {
             const verifyData = await verifyResponse.json();
 
             if (verifyData.success) {
-              setPaymentSuccess(`Payment successful! ${plan} plan activated.`);
+              setPaymentSuccess(verifyData.message);
               await checkAuth(); // Refresh user data
             } else {
               throw new Error(verifyData.message || 'Payment verification failed');
@@ -502,6 +515,8 @@ export default function Home() {
         setShowReviews(false); // Close mobile dropdown
         // Refresh reviews after submission to show the new review
         await fetchReviews();
+        // Refresh user data to ensure consistency
+        await checkAuth();
       } else {
         setReviewError(data.message);
       }

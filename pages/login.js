@@ -1,8 +1,9 @@
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useAuth } from "@/lib/authContext";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -11,34 +12,33 @@ export default function Login() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
+
+  // Check for success message in URL query params
+  useEffect(() => {
+    if (router.query.message) {
+      setSuccessMessage(router.query.message);
+      // Clear the message from URL
+      router.replace('/login', undefined, { shallow: true });
+    }
+  }, [router.query.message]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
 
-    try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    const result = await login(formData.email, formData.password);
 
-      const data = await response.json();
-
-      if (data.success) {
-        router.push("/");
-      } else {
-        setError(data.message || "Login failed");
-      }
-    } catch (error) {
-      setError("Network error. Please try again.");
-    } finally {
-      setIsLoading(false);
+    if (result.success) {
+      router.replace("/");
+    } else {
+      setError(result.message);
     }
+    
+    setIsLoading(false);
   };
 
   const handleChange = (e) => {
@@ -80,6 +80,12 @@ export default function Login() {
 
           {/* Login Form */}
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8">
+            {successMessage && (
+              <div className="bg-green-500/20 border border-green-500/50 text-green-300 px-4 py-3 rounded-lg mb-6">
+                {successMessage}
+              </div>
+            )}
+            
             {error && (
               <div className="bg-red-500/20 border border-red-500/50 text-red-300 px-4 py-3 rounded-lg mb-6">
                 {error}
