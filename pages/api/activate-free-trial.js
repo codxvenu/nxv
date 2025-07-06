@@ -32,7 +32,7 @@ export default async function handler(req, res) {
     }
 
     // Activate free trial using the upgrade logic
-    const upgradeResult = await upgradeUserPlan(user.id, 'Free Trial');
+    const upgradeResult = await upgradeUserPlan(user.id, 'Premium');
 
     res.status(200).json({
       success: true,
