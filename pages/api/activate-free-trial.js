@@ -41,7 +41,7 @@ export default async function handler(req, res) {
         id: user.id,
         name: user.name,
         email: user.email,
-        currentPlan: 'Free Trial'
+        currentPlan: 'Premium'
       }
     });
 
