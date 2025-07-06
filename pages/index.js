@@ -1172,12 +1172,12 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="w-full"
           >
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl min-[768px]:p-8 px-4 py-8 text-center mx-auto">
+            <div className="bg-white/10 w-[80%] backdrop-blur-md border border-white/20 rounded-2xl min-[768px]:p-8 px-4 py-8 text-center mx-auto">
               <h3 className="text-2xl font-bold tracking-[2px] mb-4 text-white max-[768px]:mb-6" style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}>
                 Watch How It Works
               </h3>
               <div 
-                className="bg-black/50 w-[85%] rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group max-[768px]:aspect-[16/9] mx-auto"
+                className="rounded-xl flex items-center justify-center relative overflow-hidden cursor-pointer group max-[768px]:aspect-[16/9] mx-auto"
                 onMouseEnter={() => setIsVideoHovered(true)}
                 onMouseLeave={() => setIsVideoHovered(false)}
                 onClick={handleVideoClick}
@@ -1185,7 +1185,7 @@ export default function Home() {
                 {/* Video Element */}
                 <video
                   ref={videoRef}
-                  className="w-[85%] h-full object-cover max-[768px]:aspect-[16/9] mx-auto"
+                  className="w-full h-full object-cover max-[768px]:aspect-[16/9] mx-auto rounded-[20px]"
                   onEnded={handleVideoEnded}
                   muted
                   playsInline
