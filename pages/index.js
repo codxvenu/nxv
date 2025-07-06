@@ -1190,7 +1190,7 @@ export default function Home() {
                   muted
                   playsInline
                 >
-                  <source src="https://youtu.be/dQw4w9WgXcQ" type="video/mp4" />
+                  <source src="https://keysgen.site/nvcast/videos/nvcast-tutorial.mp4" type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
                 
