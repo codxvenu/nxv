@@ -57,7 +57,7 @@ const howItWorksSteps = [
   },
   {
     number: "2", 
-    title: "Connect your phone via USB or WiFi",
+    title: "Connect your phone via USB",
     description: "Choose your preferred connection method for optimal performance"
   },
   {
@@ -143,7 +143,7 @@ const pricing = [
 const faqs = [
   {
     q: "What platforms does NxV Cast support?",
-    a: "NxV Cast works on Windows, macOS, Android, and iOS devices.",
+    a: "NxV Cast works on Windows, Android devices.",
   },
   {
     q: "Is there a free trial?",
